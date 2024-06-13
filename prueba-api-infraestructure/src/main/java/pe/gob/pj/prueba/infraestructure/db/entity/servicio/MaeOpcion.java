@@ -1,0 +1,88 @@
+package pe.gob.pj.prueba.infraestructure.db.entity.servicio;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.FilterDefs;
+import org.hibernate.annotations.Filters;
+import org.hibernate.annotations.ParamDef;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import pe.gob.pj.prueba.domain.utils.ProjectConstants;
+import pe.gob.pj.prueba.infraestructure.db.entity.AuditoriaEntity;
+
+@Entity
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Table(name="MAE_OPCION", schema = ProjectConstants.Esquema.PRUEBA)
+@NamedQueries(value= {
+		@NamedQuery(name=MaeOpcion.Q_ALL, query="SELECT mo FROM MaeOpcion mo")
+})
+@FilterDefs(value= {
+		@FilterDef(name=MaeOpcion.F_ID, parameters = {@ParamDef(name=MaeOpcion.P_ID, type = "integer")}),
+		@FilterDef(name=MaeOpcion.F_ID_SUPERIOR, parameters = {@ParamDef(name=MaeOpcion.P_ID_SUPERIOR, type = "integer")})
+})
+@Filters(value= {
+		@Filter(name=MaeOpcion.F_ID, condition = "N_OPCION=:"+MaeOpcion.P_ID),
+		@Filter(name=MaeOpcion.F_ID_SUPERIOR, condition = "N_OPCION_SUPERIOR=:"+MaeOpcion.P_ID_SUPERIOR)
+})
+public class MaeOpcion extends AuditoriaEntity implements Serializable {/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	public static final String Q_ALL = "MaeOpcion.q.all";
+	
+	public static final String F_ID = "MaeOpcion.f.id";
+	public static final String F_ID_SUPERIOR = "MaeOpcion.f.idSuperior";
+	
+	public static final String P_ID = "idMaeOpcion";
+	public static final String P_ID_SUPERIOR = "idSuperiorMaeOpcion";
+	
+	public static final String TABLA = "MAE_OPCION";
+	public static final String COLUMNA_NOMBRE = "X_NOMBRE";
+	public static final String COLUMNA_DESCRIPCION = "X_DESCRIPCION";
+
+	@Id
+	@SequenceGenerator(name="SEQ_MAE_OPCION", schema = ProjectConstants.Esquema.PRUEBA, sequenceName = "USEQ_MAE_OPCION" , initialValue = 1, allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_MAE_OPCION")
+	@Column(name="N_OPCION", nullable = false)
+	private Integer id;
+	@Column(name="C_OPCION", nullable = false)
+	private String codigo;
+	@Column(name="X_NOMBRE", nullable = false)
+	private String nombre;
+	@Column(name="X_URL", nullable = false)
+	private String url;
+	@Column(name="X_ICONO", nullable = false)
+	private String icono;
+	@Column(name="N_ORDEN", nullable = false)
+	private Integer orden;
+	
+	@ManyToOne(optional = true, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+	@JoinColumn(name="N_OPCION_SUPERIOR")
+	private MaeOpcion opcionSuperior;
+	
+	@OneToMany(mappedBy = "opcion", fetch = FetchType.LAZY)
+	private List<MovOpcionPerfil> perfils = new ArrayList<MovOpcionPerfil>();
+
+}
