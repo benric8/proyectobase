@@ -10,7 +10,7 @@ import org.springframework.context.annotation.PropertySources;
 
 @Configuration
 @PropertySources(value= {
-		@PropertySource("classpath:servicio-prueba-api.properties")
+		@PropertySource("classpath:prueba-api.properties")
 })
 public class ProjectProperties implements Serializable {
 

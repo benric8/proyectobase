@@ -9,7 +9,7 @@
 	</parent>
 
 	<groupId>pe.gob.pj.prueba</groupId>
-	<artifactId>servicio-prueba-api-rest</artifactId>
+	<artifactId>prueba-api-rest</artifactId>
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<name>Servicio Prueba API REST</name>
