@@ -58,7 +58,7 @@ public class GestionPersonaController implements GestionPersona, Serializable {
 	public ResponseEntity<GlobalResponse> consultarPersonas(String cuo, String ips, String usuauth, String uri,
 			String params, String herramienta, String ip,String formatoRespuesta, String numeroDocumento) {
 		GlobalResponse res = new GlobalResponse();
-		res.setCodigoOperacion(cuo.substring(1, cuo.length() - 1));
+		res.setCodigoOperacion(cuo);
 		
 		try {
 			res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
@@ -85,7 +85,7 @@ public class GestionPersonaController implements GestionPersona, Serializable {
 	public ResponseEntity<GlobalResponse> registrarPersona(String cuo, String ips, String usuauth, String uri,
 			String params, String herramienta, String ip, PersonaRequest request) {
 		GlobalResponse res = new GlobalResponse();
-		res.setCodigoOperacion(cuo.substring(1, cuo.length() - 1));
+		res.setCodigoOperacion(cuo);
 		try {
 			long inicio = System.currentTimeMillis();
 			res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
@@ -120,7 +120,7 @@ public class GestionPersonaController implements GestionPersona, Serializable {
 	public ResponseEntity<GlobalResponse> actualizarPersona(String cuo, String ips, String usuauth, String uri,
 			String params, String herramienta, String ip, Integer id, PersonaRequest request) {
 		GlobalResponse res = new GlobalResponse();
-		res.setCodigoOperacion(cuo.substring(1, cuo.length() - 1));
+		res.setCodigoOperacion(cuo);
 		try {
 			res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
 			res.setDescripcion(Errors.OPERACION_EXITOSA.getNombre());
