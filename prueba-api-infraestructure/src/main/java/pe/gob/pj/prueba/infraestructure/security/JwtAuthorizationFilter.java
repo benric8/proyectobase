@@ -106,8 +106,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 				String username = parsedToken.getBody().getSubject();
 				request.setAttribute(ProjectConstants.AUD_USUARIO, username);
 				
-				@SuppressWarnings({ "unchecked", "unused" })
-				List<String> roles = (List<String>) parsedToken.getBody().get(Claim.ROLES.getNombre());
 				String rolSeleccionado = (String) parsedToken.getBody().get(Claim.ROL_SELECCIONADO.getNombre());
 
 				List<SimpleGrantedAuthority> authorities = ((List<?>) parsedToken.getBody().get(Claim.ROLES.getNombre())).stream()

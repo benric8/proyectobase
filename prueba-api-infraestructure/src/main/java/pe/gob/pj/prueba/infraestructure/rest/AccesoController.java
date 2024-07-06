@@ -54,7 +54,7 @@ public class AccesoController implements Acceso {
 	public ResponseEntity<GlobalResponse> iniciarSesion(String cuo, String ip, String jwt, @Valid LoginRequest request) {
 
 		GlobalResponse res = new GlobalResponse();
-		res.setCodigoOperacion(cuo.substring(1, cuo.length() - 1));
+		res.setCodigoOperacion(cuo);
 		try {
 			if (!request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
 					|| (request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
@@ -67,7 +67,7 @@ public class AccesoController implements Acceso {
 					res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
 					res.setDescripcion(Errors.OPERACION_EXITOSA.getNombre());
 
-					String token = getNewToken(jwt, request.getUsuario(), rolesUsuario, ip, cuo, false);
+					String token = getNewToken(jwt, request.getUsuario(), rolesUsuario, ip, cuo, true);
 					if (!ProjectUtils.isNullOrEmpty(token)) {
 						usuario.setToken(token);
 						res.setData(usuario);
@@ -108,7 +108,7 @@ public class AccesoController implements Acceso {
 	public ResponseEntity<GlobalResponse> obtenerOpciones(String cuo, String ip, String jwt,
 			@Valid ObtenerOpcionesRequest request) {
 		GlobalResponse res = new GlobalResponse();
-		res.setCodigoOperacion(cuo.substring(1, cuo.length() - 1));
+		res.setCodigoOperacion(cuo);
 		try {
 
 			PerfilOpcions perfilOpciones = accesoUC.obtenerOpciones(cuo, request.getIdPerfil());
@@ -146,21 +146,23 @@ public class AccesoController implements Acceso {
 	private String getNewToken(String token, String usuario, List<String> rolesUsuario, String ipRemota, String cuo,
 			boolean seleccionaRol) {
 		String newToken = "";
-		final String rolSeleccionado = rolesUsuario.get(0);
+		StringBuilder rolSeleccionado = new StringBuilder();
 		try {
 			byte[] signingKey = SecurityConstants.JWT_SECRET.getBytes();
 			try {
-				Jws<Claims> parsedToken = Jwts.parser().setSigningKey(signingKey)
-						.parseClaimsJws(token.replace("Bearer ", ""));
+				Jws<Claims> parsedToken = Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token);
 				List<String> roles = new ArrayList<>();
 
 				@SuppressWarnings("unchecked")
 				List<String> rolesToken = (List<String>) parsedToken.getBody().get(Claim.ROLES.getNombre());
 				if (seleccionaRol) {
-					if (rolesToken.stream().filter(x -> x.equals(rolSeleccionado)).count() < 1)
+					rolSeleccionado.append(rolesUsuario.get(0));
+					if (rolesToken.stream().filter(x -> x.equals(rolSeleccionado.toString())).count() < 1)
 						return newToken;
 					else
 						rolesToken = rolesUsuario;
+				} else {
+					rolSeleccionado.append(parsedToken.getBody().get(Claim.ROL_SELECCIONADO.getNombre()));
 				}
 				roles = rolesToken;
 
@@ -179,7 +181,7 @@ public class AccesoController implements Acceso {
 							.setSubject(subject)
 							.setExpiration(ProjectUtils.sumarRestarSegundos(ahora, tiempoSegundosExpira))
 							.claim(Claim.ROLES.getNombre(), roles)
-							.claim(Claim.ROL_SELECCIONADO.getNombre(), rolSeleccionado)
+							.claim(Claim.ROL_SELECCIONADO.getNombre(), rolSeleccionado.toString())
 							.claim(Claim.USUARIO_REALIZA_PETICION.getNombre(), usuario)
 							.claim(Claim.IP_REALIZA_PETICION.getNombre(), ipRemota)
 							.claim(Claim.LIMITE_TOKEN.getNombre(), ProjectUtils.sumarRestarSegundos(ahora,
@@ -197,7 +199,7 @@ public class AccesoController implements Acceso {
 							.setIssuer(SecurityConstants.TOKEN_ISSUER).setAudience(SecurityConstants.TOKEN_AUDIENCE)
 							.setSubject(subject).setExpiration(new Date(System.currentTimeMillis() + tiempoToken))
 							.claim(Claim.ROLES.getNombre(), roles)
-							.claim(Claim.ROL_SELECCIONADO.getNombre(), rolSeleccionado)
+							.claim(Claim.ROL_SELECCIONADO.getNombre(), rolSeleccionado.toString())
 							.claim(Claim.USUARIO_REALIZA_PETICION.getNombre(), usuario)
 							.claim(Claim.IP_REALIZA_PETICION.getNombre(), ipRemota)
 							.compact();
