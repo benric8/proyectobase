@@ -19,6 +19,16 @@ import pe.gob.pj.prueba.infraestructure.rest.response.GlobalResponse;
 @RequestMapping(value = "authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface Acceso extends Base{
 
+	/***
+	 * 
+	 * POST /authenticate/login : Iniciar sesión
+	 * 
+	 * @param cuo
+	 * @param ip
+	 * @param jwt
+	 * @param login
+	 * @return
+	 */
 	@PostMapping(value = "login")
 	public ResponseEntity<GlobalResponse> iniciarSesion(
 			@RequestAttribute(name = ProjectConstants.AUD_CUO) String cuo,
@@ -26,6 +36,16 @@ public interface Acceso extends Base{
 			@RequestAttribute(name = ProjectConstants.AUD_JWT) String jwt, 
 			@Valid @RequestBody LoginRequest login);
 	
+	/***
+	 * 
+	 * POST /authenticate/opciones : Obtener las opciones del perfil enviado
+	 * 
+	 * @param cuo
+	 * @param ip
+	 * @param jwt
+	 * @param perfil
+	 * @return
+	 */
 	@PostMapping(value = "opciones")
 	public ResponseEntity<GlobalResponse> obtenerOpciones(
 			@RequestAttribute(name=ProjectConstants.AUD_CUO) String cuo, 

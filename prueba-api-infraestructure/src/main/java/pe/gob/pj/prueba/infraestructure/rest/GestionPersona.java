@@ -25,6 +25,21 @@ import pe.gob.pj.prueba.infraestructure.rest.response.GlobalResponse;
 		MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 public interface GestionPersona extends Base{
 
+	/***
+	 * 
+	 * GET /personas : Consultar datos de persona
+	 * 
+	 * @param cuo
+	 * @param ips
+	 * @param usuauth
+	 * @param uri
+	 * @param params
+	 * @param herramienta
+	 * @param ip
+	 * @param formatoRespuesta
+	 * @param numeroDocumento
+	 * @return
+	 */
 	@GetMapping
 	public ResponseEntity<GlobalResponse> consultarPersonas(
 			@RequestAttribute(name = ProjectConstants.AUD_CUO) String cuo,
@@ -39,6 +54,20 @@ public interface GestionPersona extends Base{
 			@Pattern(regexp = ProjectConstants.Pattern.NUMBER, message = "El parámetro numero_documento solo permite valores numéricos.")
 			@RequestParam(name = "numero_documento", required = false) String numeroDocumento);
 
+	/***
+	 * 
+	 * POST /personas/crear : Crear persona en base a los datos enviados
+	 * 
+	 * @param cuo
+	 * @param ips
+	 * @param usuauth
+	 * @param uri
+	 * @param params
+	 * @param herramienta
+	 * @param ip
+	 * @param persona
+	 * @return
+	 */
 	@PostMapping(value="crear")
 	public ResponseEntity<GlobalResponse> registrarPersona(
 			@RequestAttribute(name = ProjectConstants.AUD_CUO) String cuo,
@@ -50,6 +79,21 @@ public interface GestionPersona extends Base{
 			@RequestAttribute(name = ProjectConstants.AUD_IP) String ip,
 			@Validated @RequestBody PersonaRequest persona);
 
+	/***
+	 * 
+	 * PUT /personas/actualizar/{id} : Actualizar persona en base al id
+	 * 
+	 * @param cuo
+	 * @param ips
+	 * @param usuauth
+	 * @param uri
+	 * @param params
+	 * @param herramienta
+	 * @param ip
+	 * @param id
+	 * @param persona
+	 * @return
+	 */
 	@PutMapping(value="actualizar/{id}")
 	public ResponseEntity<GlobalResponse> actualizarPersona(
 			@RequestAttribute(name = ProjectConstants.AUD_CUO) String cuo,

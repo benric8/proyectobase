@@ -27,7 +27,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import lombok.extern.slf4j.Slf4j;
-import pe.gob.pj.prueba.domain.enums.Errors;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
 
@@ -53,9 +52,9 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 			errorsString.append("\n");
 			errors.put(fieldName + " (" + valor + ")", errorMessage);
         });
-        body.put("codigo", Errors.ERROR_AL.getCodigo()+"400");
+        body.put("codigo", HttpStatus.BAD_REQUEST);
 		body.put("descripcion", errorsString);
-		body.put("codigoOperacion", cuo.substring(1, cuo.length()-1));
+		body.put("codigoOperacion", cuo);
 		body.put("data", null);
 		log.error("{} {} {}",cuo,errorsString,errors.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining(", ")));
         return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.OK);//400 - HttpStatus.BAD_REQUEST
@@ -78,9 +77,9 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 		
 		List<MediaType> mediaTypes = ex.getSupportedMediaTypes();
 
-		body.put("codigo", Errors.ERROR_AL.getCodigo()+status.value());
+		body.put("codigo", status.value());
 		body.put("descripcion", builder.toString());
-		body.put("codigoOperacion", cuo.substring(1, cuo.length()-1));
+		body.put("codigoOperacion", cuo);
 		body.put("data", null);
 		log.error("{} {} La URI: {} solo acepta formato {}",cuo, builder.toString(),((ServletWebRequest)request).getRequest().getRequestURI().toString(),mediaTypes);
 		return new ResponseEntity<>(body, headers, HttpStatus.OK);//415 - HttpStatus.UNSUPPORTED_MEDIA_TYPE
@@ -106,9 +105,9 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 			errors.put(fieldName + " (" + valor + ")", errorMessage);
 		});
 		
-		body.put("codigo", Errors.ERROR_AL.getCodigo()+status.value());
+		body.put("codigo", status.value());
 		body.put("descripcion", errorsString);
-		body.put("codigoOperacion", cuo.substring(1, cuo.length()-1));
+		body.put("codigoOperacion", cuo);
 		body.put("data", null);
 		log.error("{} {} {} ",cuo,errorsString,errors.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining(", ")));
 		return new ResponseEntity<>(body, headers, HttpStatus.OK);//400 - HttpStatus.BAD_REQUEST
@@ -123,9 +122,9 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 		builder.append(ex.getMethod());
 		builder.append(" no es compatible. ");
 
-		body.put("codigo", Errors.ERROR_AL.getCodigo()+status.value());
+		body.put("codigo", status.value());
 		body.put("descripcion", builder.toString());
-		body.put("codigoOperacion", cuo.substring(1, cuo.length()-1));
+		body.put("codigoOperacion", cuo);
 		body.put("data", null);
 		log.error("{} {} La URI: {} solo acepta {}",cuo, builder.toString(),((ServletWebRequest)request).getRequest().getRequestURI().toString(),Arrays.toString(ex.getSupportedMethods()));
 		return new ResponseEntity<>(body, headers, HttpStatus.OK);//405 - HttpStatus.METHOD_NOT_ALLOWED
@@ -142,24 +141,24 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 		errors.put("mensaje", ex.getLocalizedMessage());
 //		body.put("error", errors);
 		
-		body.put("codigo", Errors.ERROR_AL.getCodigo()+HttpStatus.NOT_FOUND);
+		body.put("codigo",HttpStatus.NOT_FOUND);
 		body.put("descripcion", errors);
-		body.put("codigoOperacion", cuo.substring(1, cuo.length()-1));
+		body.put("codigoOperacion", cuo);
 		body.put("data", null);
 		log.error("{} {}",cuo , errors.entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining(", ")));
 		return new ResponseEntity<Object>(body, new HttpHeaders(), HttpStatus.OK); //404 - HttpStatus.NOT_FOUND
 	}
 
-	@ExceptionHandler({ Exception.class })
+	@ExceptionHandler({Exception.class})
 	public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
 		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, SCOPE_REQUEST));
 		Map<String, Object> body = new LinkedHashMap<>();
-		body.put("codigo", Errors.ERROR_AL.getCodigo()+HttpStatus.INTERNAL_SERVER_ERROR.toString().substring(0, 4));
+		body.put("codigo", HttpStatus.INTERNAL_SERVER_ERROR.toString().substring(0, 4));
 		StringBuilder builder = new StringBuilder();
 		builder.append("Ocurrió un error no controlado. Error : ");
 		builder.append(ex);
 		body.put("descripcion", "Ocurrió un error no controlado.");
-		body.put("codigoOperacion", cuo.substring(1, cuo.length()-1));
+		body.put("codigoOperacion", cuo);
 		body.put("data", null);
 		log.error("{} {} {}",cuo,builder.toString(), ProjectUtils.convertExceptionToString(ex));
 		return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.OK); //500 - HttpStatus.INTERNAL_SERVER_ERROR

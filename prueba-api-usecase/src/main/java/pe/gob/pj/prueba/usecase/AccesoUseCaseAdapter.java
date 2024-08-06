@@ -38,7 +38,7 @@ public class AccesoUseCaseAdapter implements AccesoUseCasePort{
 		
 		if(user==null || ProjectUtils.isNullOrEmpty(user.getClave()) || !user.getClave().equals(password))
 			throw new ErrorException(Errors.NEGOCIO_CREDENCIALES_INCORRECTAS.getCodigo(), 
-					Errors.ERROR_AL.getNombre()+Proceso.INICIAR_SESION.getNombre()+Errors.NEGOCIO_CREDENCIALES_INCORRECTAS.getNombre());
+					String.format(Errors.NEGOCIO_CREDENCIALES_INCORRECTAS.getNombre(), Proceso.INICIAR_SESION.getNombre()));
 		
 		user.setClave("******");
 		
@@ -51,7 +51,7 @@ public class AccesoUseCaseAdapter implements AccesoUseCasePort{
 		PerfilOpcions perfilOpciones = accesoPersistencePort.obtenerOpciones(cuo, idPerfil);
 		if(perfilOpciones.getOpciones().size()<1) 
 			throw new ErrorException(Errors.DATOS_NO_ENCONTRADOS.getCodigo(), 
-					Errors.ERROR_AL.getNombre()+Proceso.OBTENER_OPCIONES.getNombre()+Errors.NEGOCIO_PERFIL_NO_ENCONTRADO.getNombre());
+					String.format(Errors.NEGOCIO_PERFIL_NO_ENCONTRADO.getNombre(), Proceso.OBTENER_OPCIONES.getNombre()));
 		return perfilOpciones;
 	}
 

@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,6 +23,9 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.enums.Errors;
 import pe.gob.pj.prueba.domain.enums.Proceso;
@@ -44,11 +46,12 @@ import pe.gob.pj.prueba.infraestructure.rest.response.GlobalResponse;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AccesoController implements Acceso {
 
-	@Autowired
 	@Qualifier("accesoUseCasePort")
-	private AccesoUseCasePort accesoUC;
+	final AccesoUseCasePort accesoUC;
 
 	@Override
 	public ResponseEntity<GlobalResponse> iniciarSesion(String cuo, String ip, String jwt, @Valid LoginRequest request) {
@@ -79,23 +82,23 @@ public class AccesoController implements Acceso {
 					log.error(
 							"{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición",
 							cuo, request.getAplicaCaptcha(), request.getTokenCaptcha(), ip);
-					throw new ErrorException(Errors.ERROR_TOKEN_CAPTCHA.getCodigo(), Errors.ERROR_AL.getNombre()
-							+ Proceso.INICIAR_SESION.getNombre() + Errors.ERROR_TOKEN_CAPTCHA.getNombre());
+					throw new ErrorException(Errors.ERROR_TOKEN_CAPTCHA.getCodigo(), 
+							String.format(Errors.ERROR_TOKEN_CAPTCHA.getNombre(), Proceso.INICIAR_SESION.getNombre()));
 				}
 			} else {
 				log.error(
 						"{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición",
 						cuo, request.getAplicaCaptcha(), request.getTokenCaptcha(), ip);
-				throw new ErrorException(Errors.ERROR_TOKEN_CAPTCHA.getCodigo(), Errors.ERROR_AL.getNombre()
-						+ Proceso.INICIAR_SESION.getNombre() + Errors.ERROR_TOKEN_CAPTCHA.getNombre());
+				throw new ErrorException(Errors.ERROR_TOKEN_CAPTCHA.getCodigo(), 
+						String.format(Errors.ERROR_TOKEN_CAPTCHA.getNombre(), Proceso.INICIAR_SESION.getNombre()));
 			}
 		} catch (ErrorException e) {
 			handleException(cuo, e, res);
 		} catch (Exception e) {
 			handleException(cuo,
 					new ErrorException(
-							Errors.ERROR_INESPERADO.getCodigo(), Errors.ERROR_AL.getNombre()
-									+ Proceso.INICIAR_SESION.getNombre() + Errors.ERROR_INESPERADO.getNombre(),
+							Errors.ERROR_INESPERADO.getCodigo(), 
+							String.format(Errors.ERROR_INESPERADO.getNombre(), Proceso.INICIAR_SESION.getNombre()),
 							e.getMessage(), e.getCause()),
 					res);
 		}
@@ -133,8 +136,8 @@ public class AccesoController implements Acceso {
 		} catch (Exception e) {
 			handleException(cuo,
 					new ErrorException(
-							Errors.ERROR_INESPERADO.getCodigo(), Errors.ERROR_AL.getNombre()
-									+ Proceso.ELEGIR_PERFIL.getNombre() + Errors.ERROR_INESPERADO.getNombre(),
+							Errors.ERROR_INESPERADO.getCodigo(), 
+							String.format(Errors.ERROR_INESPERADO.getNombre(), Proceso.ELEGIR_PERFIL.getNombre()),
 							e.getMessage(), e.getCause()),
 					res);
 		}

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import pe.gob.pj.prueba.domain.enums.Errors;
 import pe.gob.pj.prueba.domain.enums.Proceso;
 import pe.gob.pj.prueba.domain.exceptions.ErrorException;
@@ -29,6 +31,8 @@ import pe.gob.pj.prueba.infraestructure.rest.request.PersonaRequest;
 import pe.gob.pj.prueba.infraestructure.rest.response.GlobalResponse;
 
 @RestController
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class GestionPersonaController implements GestionPersona, Serializable {
 
 	/**
@@ -36,23 +40,14 @@ public class GestionPersonaController implements GestionPersona, Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Autowired
 	@Qualifier("sunarpClient")
-	private TestClient clientSunarp;
-
+	final TestClient clientSunarp;
+	
+	@Qualifier("gestionPersonaUseCasePort")
 	final GestionPersonaUseCasePort gestionPersonaUseCasePort;
 	final AuditoriaGeneralUseCasePort auditoriaGeneralUseCasePort;
 	final PersonaMapper personaMapper;
 	final AuditoriaGeneralMapper auditoriaGeneralMapper;
-	
-	public GestionPersonaController(@Qualifier("gestionPersonaUseCasePort") GestionPersonaUseCasePort gestionPersonaUseCasePort,
-			AuditoriaGeneralUseCasePort auditoriaGeneralUseCasePort,
-			PersonaMapper personaMapper,AuditoriaGeneralMapper auditoriaGeneralMapper){
-		this.gestionPersonaUseCasePort = gestionPersonaUseCasePort;
-		this.auditoriaGeneralUseCasePort = auditoriaGeneralUseCasePort;
-		this.auditoriaGeneralMapper = auditoriaGeneralMapper;
-		this.personaMapper = personaMapper;
-	}
 
 	@Override
 	public ResponseEntity<GlobalResponse> consultarPersonas(String cuo, String ips, String usuauth, String uri,
@@ -71,8 +66,8 @@ public class GestionPersonaController implements GestionPersona, Serializable {
 		} catch (Exception e) {
 			handleException(cuo,
 					new ErrorException(
-							Errors.ERROR_INESPERADO.getCodigo(), Errors.ERROR_AL.getNombre()
-									+ Proceso.PERSONA_CONSULTAR.getNombre() + Errors.ERROR_INESPERADO.getNombre(),
+							Errors.ERROR_INESPERADO.getCodigo(), 
+							String.format(Errors.ERROR_INESPERADO.getNombre(),Proceso.PERSONA_CONSULTAR.getNombre()),
 							e.getMessage(), e.getCause()),
 					res);
 		}
@@ -106,8 +101,8 @@ public class GestionPersonaController implements GestionPersona, Serializable {
 		} catch (Exception e) {
 			handleException(cuo,
 					new ErrorException(
-							Errors.ERROR_INESPERADO.getCodigo(), Errors.ERROR_AL.getNombre()
-									+ Proceso.PERSONA_REGISTRAR.getNombre() + Errors.ERROR_INESPERADO.getNombre(),
+							Errors.ERROR_INESPERADO.getCodigo(), 
+							String.format(Errors.ERROR_INESPERADO.getNombre(), Proceso.PERSONA_REGISTRAR.getNombre()),
 							e.getMessage(), e.getCause()),
 					res);
 		}
@@ -133,8 +128,8 @@ public class GestionPersonaController implements GestionPersona, Serializable {
 		} catch (Exception e) {
 			handleException(cuo,
 					new ErrorException(
-							Errors.ERROR_INESPERADO.getCodigo(), Errors.ERROR_AL.getNombre()
-									+ Proceso.PERSONA_ACTUALIZAR.getNombre() + Errors.ERROR_INESPERADO.getNombre(),
+							Errors.ERROR_INESPERADO.getCodigo(), 
+							String.format(Errors.ERROR_INESPERADO.getNombre(), Proceso.PERSONA_ACTUALIZAR.getNombre()),
 							e.getMessage(), e.getCause()),
 					res);
 		}

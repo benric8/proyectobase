@@ -33,7 +33,7 @@ public class GestionPersonaUseCaseAdapter implements GestionPersonaUseCasePort {
 		List<Persona> lista = gestionPersonaPersistencePort.buscarPersona(cuo, filters);
 		if (lista.isEmpty()) {
 			throw new ErrorException(Errors.DATOS_NO_ENCONTRADOS.getCodigo(),
-					Errors.DATOS_NO_ENCONTRADOS.getNombre() + Proceso.PERSONA_CONSULTAR.getNombre());
+					String.format(Errors.DATOS_NO_ENCONTRADOS.getNombre(), Proceso.PERSONA_CONSULTAR.getNombre()));
 		}
 		return lista;
 	}
@@ -46,7 +46,7 @@ public class GestionPersonaUseCaseAdapter implements GestionPersonaUseCasePort {
 		filters.put(Persona.P_NUMERO_DOCUMENTO, persona.getNumeroDocumento());
 		if(!gestionPersonaPersistencePort.buscarPersona(cuo, filters).isEmpty()) {
 			throw new ErrorException(Errors.NEGOCIO_PERSONA_YA_REGISTRADA.getCodigo(), 
-					Errors.ERROR_AL.getNombre() + Proceso.PERSONA_REGISTRAR.getNombre() + Errors.NEGOCIO_PERSONA_YA_REGISTRADA.getNombre());
+					String.format(Errors.NEGOCIO_PERSONA_YA_REGISTRADA.getNombre(), Proceso.PERSONA_REGISTRAR.getNombre()));
 		}
 		gestionPersonaPersistencePort.registrarPersona(cuo, persona);
 	}

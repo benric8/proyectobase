@@ -30,9 +30,6 @@ import java.util.regex.Pattern;
 import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
 
-//import com.fasterxml.jackson.core.JsonProcessingException;
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class ProjectUtils {
 	
@@ -57,14 +54,6 @@ public class ProjectUtils {
 		}
 		return valido;
 	}
-
-	public static boolean esStringValido(String cadena) {
-		boolean valido = true;
-		if (cadena == null || cadena.isEmpty()) {
-			valido = false;
-		}
-		return valido;
-	}	
 
 	public static boolean esEntero(String entrada) {
 		try {
@@ -355,14 +344,6 @@ public class ProjectUtils {
 			throw new SQLException("Error de SQL al mapear: " + e.getMessage());
 		}
 		return list;
-	}
-
-	public static Integer parseInteger(Object value, Integer defaultValue) throws Exception {
-		try {
-			return Integer.parseInt(value.toString());
-		} catch (Exception e) {
-			throw new Exception(ProjectConstants.Mensajes.MSG_ERROR_GENERICO_CONVERSION + " [" + e.getMessage() + "]");
-		}
 	}
 
 	public static Integer parseInteger(Object value) throws Exception {

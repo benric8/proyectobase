@@ -55,8 +55,8 @@ public class DefaultController implements Default, Serializable {
 		} catch (Exception e) {
 			handleException(cuo,
 					new ErrorException(
-							Errors.ERROR_INESPERADO.getCodigo(), Errors.ERROR_AL.getNombre()
-									+ Proceso.HEALTHCHECK.getNombre() + Errors.ERROR_INESPERADO.getNombre(),
+							Errors.ERROR_INESPERADO.getCodigo(), 
+							String.format(Errors.ERROR_INESPERADO.getNombre(), Proceso.HEALTHCHECK.getNombre()),
 							e.getMessage(), e.getCause()),
 					res);
 		}
@@ -173,8 +173,8 @@ public class DefaultController implements Default, Serializable {
 		} catch (Exception e) {
 			handleException(cuo,
 					new ErrorException(
-							Errors.ERROR_TOKEN_NO_VALIDO.getCodigo(), Errors.ERROR_AL.getNombre()
-									+ Proceso.REFRESH.getNombre() + Errors.ERROR_TOKEN_NO_VALIDO.getNombre(),
+							Errors.ERROR_TOKEN_NO_VALIDO.getCodigo(), 
+							String.format(Errors.ERROR_TOKEN_NO_VALIDO.getNombre(), Proceso.REFRESH.getNombre()),
 							e.getMessage(), e.getCause()),
 					res);
 		}
