@@ -28,8 +28,8 @@ public class SeguridadPersistenceAdapter implements SeguridadPersistencePort {
   @Override
   public String autenticarUsuario(String cuo, String codigoCliente, String codigoRol,
       String usuario, String clave) throws Exception {
-    Usuario user = new Usuario();
-    int nAplicacion = ProjectProperties.getSeguridadIdAplicativo();
+    var user = new Usuario();
+    var nAplicacion = ProjectProperties.getSeguridadIdAplicativo();
     Object[] params = {usuario, codigoRol, nAplicacion, codigoCliente};
     try {
       TypedQuery<MaeUsuarioEntity> query = this.entityManager
@@ -38,8 +38,8 @@ public class SeguridadPersistenceAdapter implements SeguridadPersistencePort {
       query.setParameter(MaeRolUsuarioEntity.P_COD_ROL, codigoRol);
       query.setParameter(MaeRolUsuarioEntity.P_COD_CLIENTE, codigoCliente);
       query.setParameter(MaeRolUsuarioEntity.P_N_APLICATIVO, nAplicacion);
-      MaeUsuarioEntity usr = query.getSingleResult();
-      String claveFinal = EncryptUtils.encrypt(usuario, clave);
+      var usr = query.getSingleResult();
+      var claveFinal = EncryptUtils.encrypt(usuario, clave);
       if (ProjectUtils.isNull(usr.getCClave()).trim().equals(claveFinal)) {
         user.setId(usr.getNUsuario());
         user.setCClave(ProjectUtils.isNull(usr.getCClave()));
@@ -55,13 +55,13 @@ public class SeguridadPersistenceAdapter implements SeguridadPersistencePort {
 
   @Override
   public Usuario recuperaInfoUsuario(String cuo, String id) throws Exception {
-    Usuario user = new Usuario();
+    var user = new Usuario();
     Object[] params = {Integer.parseInt(id)};
     try {
       TypedQuery<MaeUsuarioEntity> query =
           this.entityManager.createNamedQuery(MaeUsuarioEntity.FIND_BY_ID, MaeUsuarioEntity.class);
       query.setParameter(MaeUsuarioEntity.P_N_USUARIO, Integer.parseInt(id));
-      MaeUsuarioEntity u = query.getSingleResult();
+      var u = query.getSingleResult();
       user.setCClave(u.getCClave());
       user.setCUsuario(u.getCUsuario());
       user.setId(u.getNUsuario());
@@ -78,7 +78,7 @@ public class SeguridadPersistenceAdapter implements SeguridadPersistencePort {
 
   @Override
   public List<Rol> recuperarRoles(String cuo, String id) throws Exception {
-    List<Rol> lista = new ArrayList<Rol>();
+    var lista = new ArrayList<Rol>();
     Object[] params = {Integer.parseInt(id)};
     try {
       TypedQuery<MaeRolEntity> query = this.entityManager
@@ -99,7 +99,7 @@ public class SeguridadPersistenceAdapter implements SeguridadPersistencePort {
   @Override
   public String validarAccesoMetodo(String cuo, String usuario, String rol, String operacion)
       throws Exception {
-    StringBuilder rpta = new StringBuilder("");
+    var rpta = new StringBuilder("");
     Object[] params = {usuario, rol, operacion};
     try {
       TypedQuery<MaeRolUsuarioEntity> query = this.entityManager
@@ -107,7 +107,7 @@ public class SeguridadPersistenceAdapter implements SeguridadPersistencePort {
       query.setParameter(MaeRolUsuarioEntity.P_COD_USUARIO, usuario);
       query.setParameter(MaeRolUsuarioEntity.P_COD_ROL, rol);
       query.setParameter(MaeRolUsuarioEntity.P_OPERACION, operacion);
-      MaeRolUsuarioEntity rolusuario = query.getResultStream().findFirst().orElse(null);
+      var rolusuario = query.getResultStream().findFirst().orElse(null);
       if (rolusuario != null) {
         rolusuario.getMaeRol().getMaeOperacions().forEach(x -> {
           if (x.getXEndpoint().equalsIgnoreCase(operacion))

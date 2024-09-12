@@ -24,7 +24,7 @@ public class GestionPersonaPersistenceAdapter implements GestionPersonaPersisten
 
   @Override
   public List<Persona> buscarPersona(String cuo, Map<String, Object> filters) throws Exception {
-    List<Persona> lista = new ArrayList<>();
+    var lista = new ArrayList<Persona>();
     if (!ProjectUtils.isNullOrEmpty(filters.get(Persona.P_NUMERO_DOCUMENTO))) {
       entityManager.unwrap(Session.class).enableFilter(MovPersona.F_DOCUMENTO_IDENTIDAD)
           .setParameter(MovPersona.P_DOCUMENTO_IDENTIDAD, filters.get(Persona.P_NUMERO_DOCUMENTO));
@@ -32,7 +32,7 @@ public class GestionPersonaPersistenceAdapter implements GestionPersonaPersisten
     TypedQuery<MovPersona> query =
         entityManager.createNamedQuery(MovPersona.Q_ALL, MovPersona.class);
     query.getResultStream().forEach(movUsuario -> {
-      Persona personaDto = new Persona();
+      var personaDto = new Persona();
       personaDto.setId(movUsuario.getId());
       personaDto.setPrimerApellido(movUsuario.getPrimerApellido());
       personaDto.setSegundoApellido(movUsuario.getSegundoApellido());
@@ -53,9 +53,9 @@ public class GestionPersonaPersistenceAdapter implements GestionPersonaPersisten
 
   @Override
   public void registrarPersona(String cuo, Persona persona) throws Exception {
-    MaeTipoDocumentoPersona maeTipoDocumento = new MaeTipoDocumentoPersona();
+    var maeTipoDocumento = new MaeTipoDocumentoPersona();
     maeTipoDocumento.setCodigo(persona.getIdTipoDocumento());
-    MovPersona movPersona = new MovPersona();
+    var movPersona = new MovPersona();
     movPersona.setTipoDocumento(maeTipoDocumento);
     movPersona.setNumeroDocumento(persona.getNumeroDocumento());
     movPersona.setPrimerApellido(persona.getPrimerApellido());
@@ -79,9 +79,9 @@ public class GestionPersonaPersistenceAdapter implements GestionPersonaPersisten
         persona.getId());
     TypedQuery<MovPersona> query =
         entityManager.createNamedQuery(MovPersona.Q_ALL, MovPersona.class);
-    MovPersona movPersona = query.getSingleResult();
+    var movPersona = query.getSingleResult();
     if (!movPersona.getTipoDocumento().getCodigo().equals(persona.getIdTipoDocumento())) {
-      MaeTipoDocumentoPersona maeTipoDocumento = new MaeTipoDocumentoPersona();
+      var maeTipoDocumento = new MaeTipoDocumentoPersona();
       maeTipoDocumento.setCodigo(persona.getIdTipoDocumento());
       movPersona.setTipoDocumento(maeTipoDocumento);
     }
