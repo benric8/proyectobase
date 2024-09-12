@@ -153,7 +153,7 @@ public class CmisAdapter implements CmisPort {
      */
     public Boolean cmisExistsFolder(String path)throws Exception {
         Session session = null;
-        Boolean exist = new Boolean(false);
+        var exist = Boolean.FALSE;
         try{
             session = openSession();
             CmisObject object = session.getObjectByPath(path);
