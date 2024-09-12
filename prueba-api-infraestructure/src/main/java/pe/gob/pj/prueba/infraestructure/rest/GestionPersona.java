@@ -1,6 +1,6 @@
 package pe.gob.pj.prueba.infraestructure.rest;
 
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
 import org.springframework.http.MediaType;

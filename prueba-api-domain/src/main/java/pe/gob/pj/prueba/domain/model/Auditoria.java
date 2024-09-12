@@ -1,6 +1,6 @@
 package pe.gob.pj.prueba.domain.model;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 import lombok.AccessLevel;
 import lombok.Getter;

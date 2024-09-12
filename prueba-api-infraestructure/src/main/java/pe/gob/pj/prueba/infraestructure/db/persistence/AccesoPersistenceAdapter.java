@@ -1,6 +1,6 @@
 package pe.gob.pj.prueba.infraestructure.db.persistence;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class GestionPersonaPersistenceAdapter implements GestionPersonaPersisten
 		movPersona.setTelefono(persona.getTelefono());
 		movPersona.setFechaNacimiento(ProjectUtils.parseStringToDate(persona.getFechaNacimiento(), ProjectConstants.Formato.FECHA_DD_MM_YYYY));
 		movPersona.setActivo(!Estado.INACTIVO_NUMERICO.getNombre().equals(persona.getActivo())?Estado.ACTIVO_NUMERICO.getNombre() : Estado.INACTIVO_NUMERICO.getNombre());
-		this.sf.getCurrentSession().save(movPersona);
+		this.sf.getCurrentSession().persist(movPersona);
 		persona.setId(movPersona.getId());
 	}
 
@@ -92,7 +92,7 @@ public class GestionPersonaPersistenceAdapter implements GestionPersonaPersisten
 		movPersona.setTelefono(persona.getTelefono());
 		movPersona.setFechaNacimiento(ProjectUtils.parseStringToDate(persona.getFechaNacimiento(), ProjectConstants.Formato.FECHA_DD_MM_YYYY));
 		movPersona.setActivo(!Estado.INACTIVO_NUMERICO.getNombre().equals(persona.getActivo())?Estado.ACTIVO_NUMERICO.getNombre() : Estado.INACTIVO_NUMERICO.getNombre());
-		this.sf.getCurrentSession().update(movPersona);
+		this.sf.getCurrentSession().merge(movPersona);
 	}
 
 }

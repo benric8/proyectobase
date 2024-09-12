@@ -23,7 +23,7 @@ public class AuditoriaGeneralPersistenceAdapter implements AuditoriaGeneralPersi
 	@Override
 	public void crear(AuditoriaAplicativos auditoriaAplicativos) throws Exception {
 		MovAuditoriaAplicativosEntity mov = auditoriaGeneralMapper.toMovAuditoriaAplicativos(auditoriaAplicativos);
-		sessionFactory.getCurrentSession().save(mov);
+		sessionFactory.getCurrentSession().persist(mov);
 	}
 
 }

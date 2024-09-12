@@ -3,19 +3,19 @@ package pe.gob.pj.prueba.infraestructure.db.entity.servicio;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
@@ -36,11 +36,11 @@ import pe.gob.pj.prueba.infraestructure.db.entity.AuditoriaEntity;
 		@NamedQuery(name=MovPersona.Q_ALL,query = "SELECT mp FROM MovPersona mp JOIN mp.tipoDocumento")
 })
 @FilterDefs(value= {
-		@FilterDef(name=MovPersona.F_ID, parameters = {@ParamDef(name=MovPersona.P_ID, type="integer")}),
-		@FilterDef(name=MovPersona.F_TIPO_DOCUMENTO, parameters = {@ParamDef(name=MovPersona.P_TIPO_DOCUMENTO, type="string")}),
-		@FilterDef(name=MovPersona.F_DOCUMENTO_IDENTIDAD, parameters = {@ParamDef(name=MovPersona.P_DOCUMENTO_IDENTIDAD, type="string")}),
-		@FilterDef(name=MovPersona.F_PRIMER_APELLIDO, parameters = {@ParamDef(name=MovPersona.P_PRIMER_APELLIDO, type="string")}),
-		@FilterDef(name=MovPersona.F_SEGUNDO_APELLIDO, parameters = {@ParamDef(name=MovPersona.P_SEGUNDO_APELLIDO, type="string")})
+		@FilterDef(name=MovPersona.F_ID, parameters = {@ParamDef(name=MovPersona.P_ID, type=Integer.class)}),
+		@FilterDef(name=MovPersona.F_TIPO_DOCUMENTO, parameters = {@ParamDef(name=MovPersona.P_TIPO_DOCUMENTO, type=String.class)}),
+		@FilterDef(name=MovPersona.F_DOCUMENTO_IDENTIDAD, parameters = {@ParamDef(name=MovPersona.P_DOCUMENTO_IDENTIDAD, type=String.class)}),
+		@FilterDef(name=MovPersona.F_PRIMER_APELLIDO, parameters = {@ParamDef(name=MovPersona.P_PRIMER_APELLIDO, type=String.class)}),
+		@FilterDef(name=MovPersona.F_SEGUNDO_APELLIDO, parameters = {@ParamDef(name=MovPersona.P_SEGUNDO_APELLIDO, type=String.class)})
 })
 @Filters(value= {
 		@Filter(name=MovPersona.F_ID, condition = "N_PERSONA=:"+MovPersona.P_ID),
