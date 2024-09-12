@@ -1,18 +1,14 @@
 package pe.gob.pj.prueba.infraestructure.rest.exceptions;
 
-import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.validation.ConstraintViolationException;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -25,7 +21,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
@@ -39,7 +35,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	 */
 	@ExceptionHandler(value = { ConstraintViolationException.class })
     protected ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
-		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, SCOPE_REQUEST));
+		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, WebRequest.SCOPE_REQUEST));
 		Map<String, Object> body = new LinkedHashMap<>();
 		
 		Map<String, String> errors = new HashMap<>();
@@ -62,8 +58,8 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	
 	@Override
 	protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
-			HttpMediaTypeNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, SCOPE_REQUEST));
+			HttpMediaTypeNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, WebRequest.SCOPE_REQUEST));
 		Map<String, Object> body = new LinkedHashMap<>();
 		
 		StringBuilder builder = new StringBuilder();
@@ -89,8 +85,8 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	 * Error handle for @Valid
 	 */
 	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,HttpHeaders headers, HttpStatus status, WebRequest request) {
-		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, SCOPE_REQUEST));
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, WebRequest.SCOPE_REQUEST));
 		Map<String, Object> body = new LinkedHashMap<>();
 
 		Map<String, String> errors = new HashMap<>();
@@ -114,8 +110,8 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	}
 
 	@Override
-	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,HttpHeaders headers, HttpStatus status, WebRequest request) {
-		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, SCOPE_REQUEST));
+	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, WebRequest.SCOPE_REQUEST));
 		Map<String, Object> body = new LinkedHashMap<>();
 		StringBuilder builder = new StringBuilder();
 		builder.append("El método de solicitud ");
@@ -131,8 +127,8 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	}
 
 	@Override
-	protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,HttpStatus status, WebRequest request) {
-		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, SCOPE_REQUEST));
+	protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,HttpStatusCode status, WebRequest request) {
+		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, WebRequest.SCOPE_REQUEST));
 		String error = "No se ha encontrado ningun controlador para  " + ex.getHttpMethod() + " " + ex.getRequestURL();
 		Map<String, Object> body = new LinkedHashMap<>();
 
@@ -151,7 +147,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 
 	@ExceptionHandler({Exception.class})
 	public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
-		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, SCOPE_REQUEST));
+		String cuo = String.valueOf(request.getAttribute(ProjectConstants.AUD_CUO, WebRequest.SCOPE_REQUEST));
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("codigo", HttpStatus.INTERNAL_SERVER_ERROR.toString().substring(0, 4));
 		StringBuilder builder = new StringBuilder();
