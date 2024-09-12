@@ -1,11 +1,4 @@
 spring:
-  datasource:
-    seguridad:
-      jndi-name: java:jboss/datasources/servicioPruebaAPISeguridad
-    negocio:
-      jndi-name: java:jboss/datasources/servicioPruebaAPINegocio
-    auditoria:
-      jndi-name: java:jboss/datasources/servicioPruebaAPIAuditoriaGeneral
   jpa:
     properties:
       hibernate:
