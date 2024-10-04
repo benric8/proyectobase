@@ -63,14 +63,14 @@ public class SeguridadConfig {
     return emf.unwrap(SessionFactory.class);
   }
 
-//  //Para usar querydsl
-//  @Primary
-//  @Bean(name = "seguridadQDSL")
-//  JPAQueryFactory jpaQueryFactorySeguridad(
-//      @Qualifier("seguridadEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
-//    EntityManager entityManager = entityManagerFactory.createEntityManager();
-//    return new JPAQueryFactory(entityManager);
-//  }
+  //Para usar querydsl
+  @Primary
+  @Bean(name = "seguridadQDSL")
+  JPAQueryFactory jpaQueryFactorySeguridad(
+      @Qualifier("seguridadEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
+    EntityManager entityManager = entityManagerFactory.createEntityManager();
+    return new JPAQueryFactory(entityManager);
+  }
 
   private Map<String, Object> getHibernateProperties() {
     Map<String, Object> properties = new HashMap<>();
