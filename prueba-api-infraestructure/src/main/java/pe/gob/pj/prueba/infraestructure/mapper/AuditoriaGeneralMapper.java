@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import pe.gob.pj.prueba.domain.model.auditoriageneral.AuditoriaAplicativos;
-import pe.gob.pj.prueba.infraestructure.db.entity.auditoriageneral.MovAuditoriaAplicativosEntity;
+import pe.gob.pj.prueba.infraestructure.db.auditoriageneral.entity.MovAuditoriaAplicativosEntity;
 import pe.gob.pj.prueba.infraestructure.rest.request.AuditoriaRequest;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)

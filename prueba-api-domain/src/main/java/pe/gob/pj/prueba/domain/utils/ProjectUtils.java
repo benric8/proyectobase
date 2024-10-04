@@ -1,7 +1,8 @@
 package pe.gob.pj.prueba.domain.utils;
 
-import java.io.CharArrayWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -23,14 +24,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
 import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 public class ProjectUtils {
 	
 	public static String sessionFactoryToJNDI(SessionFactory sf) throws SQLException {
@@ -39,11 +42,9 @@ public class ProjectUtils {
 
 	public static boolean isNullOrEmpty(Object valor) {
 		boolean flag = false;
-		if (valor == null) {
+		if (valor == null || (String.valueOf(valor)).trim().equalsIgnoreCase("") || (String.valueOf(valor)).trim().equalsIgnoreCase("null")) {
 			flag = true;
-		} else if ((String.valueOf(valor)).trim().equalsIgnoreCase("") || (String.valueOf(valor)).trim().equalsIgnoreCase("null")) {
-			flag = true;
-		}
+		} 
 		return flag;
 	}
 	
@@ -180,7 +181,7 @@ public class ProjectUtils {
 
 	public static String convertDateToString(Date fecha, String pattern) {
 		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-		if(fecha!=null)
+		if(Objects.nonNull(fecha))
 			return sdf.format(fecha);
 		else
 			return "";
@@ -272,13 +273,13 @@ public class ProjectUtils {
 		}
 	}
 
-	public static Date parseStringToDate(String fechaString, String format) throws Exception {
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, new Locale("es", "ES"));
+	public static Date parseStringToDate(String fechaString, String format) {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.of("es", "ES"));
 		Date fechaDate = null;
 		try {
 			fechaDate = simpleDateFormat.parse(fechaString);
 		} catch (ParseException e) {
-			throw new Exception(ProjectConstants.Mensajes.MSG_ERROR_GENERICO_CONVERSION + " [" + e.getMessage() + "]");
+		  log.error(" Error : {}",e);
 		}
 		return fechaDate;
 	}
@@ -498,12 +499,13 @@ public class ProjectUtils {
 	public static String convertExceptionToString(Exception e) {
 		String exception = "";
 		if (e != null) {
-			CharArrayWriter cw = new CharArrayWriter();
-			PrintWriter w = new PrintWriter(cw);
-			e.printStackTrace(w);
-			w.close();
-			exception = cw.toString();
-		} else {
+	        try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
+	            e.printStackTrace(pw);
+	            return sw.toString();
+	        } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+	    } else {
 			exception = "SE HA PRODUCIDO UNA EXCEPTION NO IDENTIFICADA";
 		}
 		return exception;

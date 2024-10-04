@@ -2,9 +2,7 @@ package pe.gob.pj.prueba.infraestructure.rest;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,13 +19,16 @@ import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.enums.Errors;
 import pe.gob.pj.prueba.domain.enums.Proceso;
 import pe.gob.pj.prueba.domain.exceptions.ErrorException;
+import pe.gob.pj.prueba.domain.model.Aplicativo;
+import pe.gob.pj.prueba.domain.model.AplicativoToken;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectProperties;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
 import pe.gob.pj.prueba.domain.utils.SecurityConstants;
 import pe.gob.pj.prueba.infraestructure.enums.Claim;
 import pe.gob.pj.prueba.infraestructure.enums.FormatoRespuesta;
-import pe.gob.pj.prueba.infraestructure.rest.response.GlobalResponse;
+import pe.gob.pj.prueba.infraestructure.rest.response.AplicativoResponse;
+import pe.gob.pj.prueba.infraestructure.rest.response.AplicativoTokenResponse;
 
 @Slf4j
 @RestController
@@ -39,23 +40,19 @@ public class DefaultController implements Default, Serializable {
   private static final long serialVersionUID = 1L;
 
   @GetMapping(value = "/healthcheck")
-  public ResponseEntity<Object> healthcheck(String cuo, String formatoRespuesta) {
-    var res = new GlobalResponse();
+  public ResponseEntity<AplicativoResponse> healthcheck(String cuo, String formatoRespuesta) {
+    var res = new AplicativoResponse();
     try {
       res.setCodigoOperacion(cuo);
-      res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
-      res.setDescripcion("Versión actual de aplicativo");
-      Map<String, String> healthcheck = new HashMap<String, String>();
-      healthcheck.put("Aplicativo", ProjectConstants.Aplicativo.NOMBRE);
-      healthcheck.put("Estado", "Disponible");
-      healthcheck.put("Versión", ProjectConstants.Aplicativo.VERSION);
+      var healthcheck = new Aplicativo();
+      healthcheck.setNombre(ProjectConstants.Aplicativo.NOMBRE);
+      healthcheck.setEstado("Disponible");
+      healthcheck.setVersion(ProjectConstants.Aplicativo.VERSION);
       res.setData(healthcheck);
     } catch (Exception e) {
+      res.errorInesperado(Proceso.HEALTHCHECK.getNombre());
       handleException(cuo,
-          new ErrorException(Errors.ERROR_INESPERADO.getCodigo(),
-              String.format(Errors.ERROR_INESPERADO.getNombre(), Proceso.HEALTHCHECK.getNombre()),
-              e.getMessage(), e.getCause()),
-          res);
+          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
     }
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType
@@ -68,13 +65,14 @@ public class DefaultController implements Default, Serializable {
 
   @SuppressWarnings("unchecked")
   @GetMapping(value = "/seguridad/refresh")
-  public ResponseEntity<GlobalResponse> refreshToken(String cuo, String ipRemota, String token) {
-    var res = new GlobalResponse();
+  public ResponseEntity<AplicativoTokenResponse> refreshToken(String cuo, String ipRemota,
+      String token) {
+    var res = new AplicativoTokenResponse();
     res.setCodigoOperacion(cuo);
     try {
       byte[] signingKey = SecurityConstants.JWT_SECRET.getBytes();
 
-      Map<String, String> dataToken = new HashMap<String, String>();
+      var dataToken = new AplicativoToken();
       try {
         Jws<Claims> parsedToken = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(signingKey))
             .build().parseClaimsJws(token);
@@ -110,10 +108,7 @@ public class DefaultController implements Default, Serializable {
                     .claim(Claim.LIMITE_TOKEN.getNombre(), ProjectUtils.sumarRestarSegundos(ahora,
                         tiempoSegundosExpira + tiempoSegundosRefresh))
                     .compact();
-
-            res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
-            res.setDescripcion(Errors.OPERACION_EXITOSA.getNombre());
-            dataToken.put("token", tokenResult);
+            dataToken.setToken(tokenResult);
             res.setData(dataToken);
             return new ResponseEntity<>(res, HttpStatus.OK);
           } else {
@@ -156,7 +151,7 @@ public class DefaultController implements Default, Serializable {
                     .compact();
             res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
             res.setDescripcion(Errors.OPERACION_EXITOSA.getNombre());
-            dataToken.put("token", tokenResult);
+            dataToken.setToken(tokenResult);
             res.setData(dataToken);
             return new ResponseEntity<>(res, HttpStatus.OK);
           } else {
@@ -172,11 +167,9 @@ public class DefaultController implements Default, Serializable {
         }
       }
     } catch (Exception e) {
+      res.errorInesperado(Proceso.REFRESH.getNombre());
       handleException(cuo,
-          new ErrorException(Errors.ERROR_TOKEN_NO_VALIDO.getCodigo(),
-              String.format(Errors.ERROR_TOKEN_NO_VALIDO.getNombre(), Proceso.REFRESH.getNombre()),
-              e.getMessage(), e.getCause()),
-          res);
+          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
     }
     return new ResponseEntity<>(res, HttpStatus.UNAUTHORIZED);
   }

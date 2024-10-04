@@ -3,9 +3,7 @@ package pe.gob.pj.prueba.infraestructure.rest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -36,7 +34,8 @@ import pe.gob.pj.prueba.infraestructure.enums.Estado;
 import pe.gob.pj.prueba.infraestructure.enums.FormatoRespuesta;
 import pe.gob.pj.prueba.infraestructure.rest.request.LoginRequest;
 import pe.gob.pj.prueba.infraestructure.rest.request.ObtenerOpcionesRequest;
-import pe.gob.pj.prueba.infraestructure.rest.response.GlobalResponse;
+import pe.gob.pj.prueba.infraestructure.rest.response.PerfilOpcionesResponse;
+import pe.gob.pj.prueba.infraestructure.rest.response.UsuarioResponse;
 
 @RestController
 @Slf4j
@@ -48,10 +47,10 @@ public class AccesoController implements Acceso {
   final AccesoUseCasePort accesoUC;
 
   @Override
-  public ResponseEntity<GlobalResponse> iniciarSesion(String cuo, String ip, String jwt,
+  public ResponseEntity<UsuarioResponse> iniciarSesion(String cuo, String ip, String jwt,
       @Valid LoginRequest request) {
 
-    var res = new GlobalResponse();
+    var res = new UsuarioResponse();
     res.setCodigoOperacion(cuo);
     try {
       if (!request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
@@ -60,10 +59,8 @@ public class AccesoController implements Acceso {
         if (!request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
             || CaptchaUtils.validCaptcha(request.getTokenCaptcha(), ip, cuo)) {
           var usuario = accesoUC.iniciarSesion(cuo, request.getUsuario(), request.getClave());
-          var rolesUsuario = usuario.getPerfiles().stream()
-              .map(perfilDTO -> perfilDTO.getRol()).collect(Collectors.toList());
-          res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
-          res.setDescripcion(Errors.OPERACION_EXITOSA.getNombre());
+          var rolesUsuario =
+              usuario.getPerfiles().stream().map(perfilDTO -> perfilDTO.getRol()).toList();
 
           var token = getNewToken(jwt, request.getUsuario(), rolesUsuario, ip, cuo, true);
           if (!ProjectUtils.isNullOrEmpty(token)) {
@@ -88,14 +85,13 @@ public class AccesoController implements Acceso {
             .format(Errors.ERROR_TOKEN_CAPTCHA.getNombre(), Proceso.INICIAR_SESION.getNombre()));
       }
     } catch (ErrorException e) {
-      handleException(cuo, e, res);
+      res.setCodigo(e.getCodigo());
+      res.setDescripcion(e.getDescripcion());
+      handleException(cuo, e);
     } catch (Exception e) {
+      res.errorInesperado(Proceso.INICIAR_SESION.getNombre());
       handleException(cuo,
-          new ErrorException(
-              Errors.ERROR_INESPERADO.getCodigo(), String
-                  .format(Errors.ERROR_INESPERADO.getNombre(), Proceso.INICIAR_SESION.getNombre()),
-              e.getMessage(), e.getCause()),
-          res);
+          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
     }
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.parseMediaType(
@@ -106,37 +102,32 @@ public class AccesoController implements Acceso {
   }
 
   @Override
-  public ResponseEntity<GlobalResponse> obtenerOpciones(String cuo, String ip, String jwt,
+  public ResponseEntity<PerfilOpcionesResponse> obtenerOpciones(String cuo, String ip, String jwt,
       @Valid ObtenerOpcionesRequest request) {
-    var res = new GlobalResponse();
+    var res = new PerfilOpcionesResponse();
     res.setCodigoOperacion(cuo);
     try {
 
       var perfilOpciones = accesoUC.obtenerOpciones(cuo, request.getIdPerfil());
-      res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
-      res.setDescripcion(Errors.OPERACION_EXITOSA.getNombre());
-
-      var map = new HashMap<String, Object>();
 
       var rolesPerfil = Arrays.asList(perfilOpciones.getRol());
-
       var token = getNewToken(jwt, request.getUsuario(), rolesPerfil, ip, cuo, true);
       if (!ProjectUtils.isNullOrEmpty(token)) {
-        map.put("opciones", perfilOpciones);
-        map.put("token", token);
-        res.setData(map);
+        perfilOpciones.setToken(token);
+        res.setData(perfilOpciones);
       } else {
         res.setCodigo(Errors.ERROR_TOKEN_NO_VALIDO.getCodigo());
         res.setDescripcion(Errors.ERROR_TOKEN_NO_VALIDO.getNombre());
       }
     } catch (ErrorException e) {
-      handleException(cuo, e, res);
+      res.setCodigo(e.getCodigo());
+      res.setDescripcion(e.getDescripcion());
+      handleException(cuo, e);
     } catch (Exception e) {
+      res.errorInesperado(Proceso.ELEGIR_PERFIL.getNombre());
       handleException(cuo,
-          new ErrorException(Errors.ERROR_INESPERADO.getCodigo(),
-              String.format(Errors.ERROR_INESPERADO.getNombre(), Proceso.ELEGIR_PERFIL.getNombre()),
-              e.getMessage(), e.getCause()),
-          res);
+          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
+
     }
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.parseMediaType(

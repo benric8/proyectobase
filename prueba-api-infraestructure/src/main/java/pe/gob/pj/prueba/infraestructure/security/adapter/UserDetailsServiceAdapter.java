@@ -37,7 +37,6 @@ public class UserDetailsServiceAdapter implements UserDetailsService, Serializab
     super();
     this.service = service;
     this.passwordEncoder = passwordEncoder;
-    // TODO Auto-generated constructor stub
   }
 
   @Override

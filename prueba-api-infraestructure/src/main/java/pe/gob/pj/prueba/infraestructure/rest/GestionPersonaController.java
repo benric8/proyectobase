@@ -1,7 +1,6 @@
 package pe.gob.pj.prueba.infraestructure.rest;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,18 +11,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import pe.gob.pj.prueba.domain.enums.Errors;
 import pe.gob.pj.prueba.domain.enums.Proceso;
 import pe.gob.pj.prueba.domain.exceptions.ErrorException;
-import pe.gob.pj.prueba.domain.model.servicio.Persona;
 import pe.gob.pj.prueba.domain.port.usecase.AuditoriaGeneralUseCasePort;
 import pe.gob.pj.prueba.domain.port.usecase.GestionPersonaUseCasePort;
+import pe.gob.pj.prueba.domain.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.infraestructure.client.servicioconsumir.services.TestClient;
 import pe.gob.pj.prueba.infraestructure.enums.FormatoRespuesta;
 import pe.gob.pj.prueba.infraestructure.mapper.AuditoriaGeneralMapper;
 import pe.gob.pj.prueba.infraestructure.mapper.PersonaMapper;
 import pe.gob.pj.prueba.infraestructure.rest.request.PersonaRequest;
-import pe.gob.pj.prueba.infraestructure.rest.response.GlobalResponse;
+import pe.gob.pj.prueba.infraestructure.rest.response.ConsultaPersonaResponse;
+import pe.gob.pj.prueba.infraestructure.rest.response.PersonaResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,26 +44,21 @@ public class GestionPersonaController implements GestionPersona, Serializable {
   final AuditoriaGeneralMapper auditoriaGeneralMapper;
 
   @Override
-  public ResponseEntity<GlobalResponse> consultarPersonas(String cuo, String ips, String usuauth,
-      String uri, String params, String herramienta, String ip, String formatoRespuesta,
-      String numeroDocumento) {
-    var res = new GlobalResponse();
+  public ResponseEntity<ConsultaPersonaResponse> consultarPersonas(String cuo, String ips,
+      String usuauth, String uri, String params, String herramienta, String ip,
+      String formatoRespuesta, String numeroDocumento) {
+    var res = new ConsultaPersonaResponse();
     res.setCodigoOperacion(cuo);
 
     try {
-      res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
-      res.setDescripcion(Errors.OPERACION_EXITOSA.getNombre());
-      var filters = new HashMap<String, Object>();
-      filters.put(Persona.P_NUMERO_DOCUMENTO, numeroDocumento);
-      res.setData(gestionPersonaUseCasePort.buscarPersona(cuo, filters));
+      res.setData(gestionPersonaUseCasePort.buscarPersona(cuo,
+          ConsultarPersonaQuery.builder().documentoIdentidad(numeroDocumento).build()));
     } catch (ErrorException e) {
-      handleException(cuo, e, res);
+      handleException(cuo, e);
     } catch (Exception e) {
+      res.errorInesperado(Proceso.PERSONA_CONSULTAR.getNombre());
       handleException(cuo,
-          new ErrorException(Errors.ERROR_INESPERADO.getCodigo(), String
-              .format(Errors.ERROR_INESPERADO.getNombre(), Proceso.PERSONA_CONSULTAR.getNombre()),
-              e.getMessage(), e.getCause()),
-          res);
+          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
     }
     var headers = new HttpHeaders();
     headers.setContentType(
@@ -75,14 +69,12 @@ public class GestionPersonaController implements GestionPersona, Serializable {
   }
 
   @Override
-  public ResponseEntity<GlobalResponse> registrarPersona(String cuo, String ips, String usuauth,
+  public ResponseEntity<PersonaResponse> registrarPersona(String cuo, String ips, String usuauth,
       String uri, String params, String herramienta, String ip, PersonaRequest request) {
-    var res = new GlobalResponse();
+    var res = new PersonaResponse();
     res.setCodigoOperacion(cuo);
     try {
       var inicio = System.currentTimeMillis();
-      res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
-      res.setDescripcion(Errors.OPERACION_EXITOSA.getNombre());
       var personaDto = personaMapper.toPersona(request);
       gestionPersonaUseCasePort.registrarPersona(cuo, personaDto);
       res.setData(personaDto);
@@ -95,13 +87,11 @@ public class GestionPersonaController implements GestionPersona, Serializable {
       auditoriaAplicativos.setPeticionBody(jsonString);
       auditoriaGeneralUseCasePort.crear(cuo, auditoriaAplicativos);
     } catch (ErrorException e) {
-      handleException(cuo, e, res);
+      handleException(cuo, e);
     } catch (Exception e) {
+      res.errorInesperado(Proceso.PERSONA_REGISTRAR.getNombre());
       handleException(cuo,
-          new ErrorException(Errors.ERROR_INESPERADO.getCodigo(), String
-              .format(Errors.ERROR_INESPERADO.getNombre(), Proceso.PERSONA_REGISTRAR.getNombre()),
-              e.getMessage(), e.getCause()),
-          res);
+          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
     }
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.parseMediaType(
@@ -112,26 +102,24 @@ public class GestionPersonaController implements GestionPersona, Serializable {
   }
 
   @Override
-  public ResponseEntity<GlobalResponse> actualizarPersona(String cuo, String ips, String usuauth,
+  public ResponseEntity<PersonaResponse> actualizarPersona(String cuo, String ips, String usuauth,
       String uri, String params, String herramienta, String ip, Integer id,
       PersonaRequest request) {
-    var res = new GlobalResponse();
+    var res = new PersonaResponse();
     res.setCodigoOperacion(cuo);
     try {
-      res.setCodigo(Errors.OPERACION_EXITOSA.getCodigo());
-      res.setDescripcion(Errors.OPERACION_EXITOSA.getNombre());
       var personaDto = personaMapper.toPersona(request);
       personaDto.setId(id);
       gestionPersonaUseCasePort.actualizarPersona(cuo, personaDto);
       res.setData(personaDto);
     } catch (ErrorException e) {
-      handleException(cuo, e, res);
+      res.setCodigo(e.getCodigo());
+      res.setDescripcion(e.getDescripcion());
+      handleException(cuo, e);
     } catch (Exception e) {
+      res.errorInesperado(Proceso.PERSONA_ACTUALIZAR.getNombre());
       handleException(cuo,
-          new ErrorException(Errors.ERROR_INESPERADO.getCodigo(), String
-              .format(Errors.ERROR_INESPERADO.getNombre(), Proceso.PERSONA_ACTUALIZAR.getNombre()),
-              e.getMessage(), e.getCause()),
-          res);
+          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
     }
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.parseMediaType(

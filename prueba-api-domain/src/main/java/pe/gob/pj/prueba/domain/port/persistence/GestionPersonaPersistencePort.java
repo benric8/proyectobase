@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import pe.gob.pj.prueba.domain.model.servicio.Persona;
+import pe.gob.pj.prueba.domain.query.ConsultarPersonaQuery;
 
 public interface GestionPersonaPersistencePort {
 
@@ -17,7 +18,7 @@ public interface GestionPersonaPersistencePort {
 	 * @return Lista del modelo Persona que coinciden con los filtros enviados
 	 * @throws Exception
 	 */
-	public List<Persona> buscarPersona(String cuo, Map<String, Object> filters) throws Exception;
+	public List<Persona> buscarPersona(String cuo, ConsultarPersonaQuery filters) throws Exception;
 
 	/**
 	 * 

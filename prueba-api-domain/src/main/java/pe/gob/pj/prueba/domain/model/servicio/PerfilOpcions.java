@@ -15,6 +15,7 @@ public class PerfilOpcions implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private String rol;
-	private List<Opcion> opciones = new ArrayList<Opcion>();
+	private List<Opcion> opciones = new ArrayList<>();
+	private String token;
 	
 }

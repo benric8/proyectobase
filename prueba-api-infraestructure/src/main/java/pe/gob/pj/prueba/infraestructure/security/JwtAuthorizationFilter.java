@@ -1,10 +1,10 @@
 package pe.gob.pj.prueba.infraestructure.security;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -38,12 +38,15 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   @Getter
   @Setter
   private SeguridadUseCasePort seguridadService;
+  private final List<String> permittedPaths =
+      Arrays.asList("/healthcheck", "/swagger-ui", "/v3/api-docs", "/swagger-ui.html");
 
   public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
       SeguridadUseCasePort servicio) {
     super(authenticationManager);
     this.setSeguridadService(servicio);
   }
+
 
   /**
    * Descripción : filtra las peticiones HTTP y evalua el token
@@ -57,6 +60,31 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws IOException, ServletException {
+
+    agregarAtributos(request);
+
+    if (isPermittedPath(request)) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
+    UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
+    if (authentication == null) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      filterChain.doFilter(request, response);
+      return;
+    }
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    filterChain.doFilter(request, response);
+
+  }
+
+  private boolean isPermittedPath(HttpServletRequest request) {
+    var path = request.getRequestURI();
+    return permittedPaths.stream().anyMatch(path::contains);
+  }
+
+  private void agregarAtributos(HttpServletRequest request) {
     request.setAttribute(ProjectConstants.AUD_CUO, ProjectUtils.obtenerCodigoUnico());
     request.setAttribute(ProjectConstants.AUD_IP,
         !ProjectUtils.isNullOrEmpty(request.getRemoteAddr()) ? request.getRemoteAddr()
@@ -67,6 +95,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         Objects.nonNull(request.getQueryString()) ? request.getQueryString()
             : ProjectConstants.Caracter.VACIO);
     request.setAttribute(ProjectConstants.AUD_HERRAMIENTA, request.getHeader("User-Agent"));
+    request.setAttribute(ProjectConstants.AUD_IPS, obtenerIps(request));
+  }
+
+  private String obtenerIps(HttpServletRequest request) {
     StringBuilder ips = new StringBuilder();
     ips.append(request.getRemoteAddr());
     ips.append(Objects.nonNull(request.getRemoteHost())
@@ -96,15 +128,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         && !ips.toString().contains(request.getHeader("HTTP_X_FORWARDED_FOR"))
             ? "|" + request.getHeader("HTTP_X_FORWARDED_FOR")
             : ProjectConstants.Caracter.VACIO);
-    request.setAttribute(ProjectConstants.AUD_IPS, ips.toString());
-    UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
-    if (authentication == null) {
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      filterChain.doFilter(request, response);
-      return;
-    }
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    filterChain.doFilter(request, response);
+    return ips.toString();
   }
 
   /**
@@ -127,10 +151,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     byte[] signingKey = SecurityConstants.JWT_SECRET.getBytes();
     if (!ProjectUtils.isNullOrEmpty(token) && token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
       try {
-        String jwt = token.replace("Bearer ", "");
+        String jwt = token.replace(SecurityConstants.TOKEN_PREFIX, "");
         request.setAttribute(ProjectConstants.AUD_JWT, jwt);
         Jws<Claims> parsedToken = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(signingKey))
-            .build().parseClaimsJws(token);
+            .build().parseClaimsJws(jwt);
 
         String username = parsedToken.getBody().getSubject();
         request.setAttribute(ProjectConstants.AUD_USUARIO, username);
@@ -140,8 +164,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         List<SimpleGrantedAuthority> authorities =
             ((List<?>) parsedToken.getBody().get(Claim.ROLES.getNombre())).stream()
-                .map(authority -> new SimpleGrantedAuthority((String) authority))
-                .collect(Collectors.toList());
+                .map(authority -> new SimpleGrantedAuthority((String) authority)).toList();
 
         String ipRemotaDeToken =
             parsedToken.getBody().get(Claim.IP_REALIZA_PETICION.getNombre()).toString();
@@ -189,8 +212,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                                                                             // !ahora.after(limiteRefresh)
           List<SimpleGrantedAuthority> authorities =
               ((List<?>) exception.getClaims().get(Claim.ROLES.getNombre())).stream()
-                  .map(authority -> new SimpleGrantedAuthority((String) authority))
-                  .collect(Collectors.toList());
+                  .map(authority -> new SimpleGrantedAuthority((String) authority)).toList();
           return new UsernamePasswordAuthenticationToken(subject, null, authorities);
         }
         log.warn(cuo + " Request to parse expired JWT : {} failed : {}", token,
@@ -212,9 +234,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             + ProjectUtils.convertExceptionToString(e));
         e.printStackTrace();
       }
-    }
-    if (!urlReq.endsWith("healthcheck")) {
-      log.error(cuo + " Hubo un problema con el token : " + token);
     }
     return null;
   }
