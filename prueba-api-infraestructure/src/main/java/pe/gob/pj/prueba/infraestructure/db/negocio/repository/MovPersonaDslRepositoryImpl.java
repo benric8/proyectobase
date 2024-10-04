@@ -7,21 +7,20 @@ import org.springframework.stereotype.Repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import pe.gob.pj.prueba.domain.model.servicio.Persona;
 import pe.gob.pj.prueba.domain.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.infraestructure.db.negocio.entity.QMaeTipoDocumentoPersona;
 import pe.gob.pj.prueba.infraestructure.db.negocio.entity.QMovPersona;
 
 @Repository
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@RequiredArgsConstructor
 public class MovPersonaDslRepositoryImpl implements MovPersonaDslRepository {
 
   @Qualifier("negocioQDSL")
   private final JPAQueryFactory queryFactory;
+
+  public MovPersonaDslRepositoryImpl(@Qualifier("negocioQDSL")JPAQueryFactory queryFactory) {
+    this.queryFactory = queryFactory;
+  }
 
   @Override
   public List<Persona> buscarPersona(ConsultarPersonaQuery query) {

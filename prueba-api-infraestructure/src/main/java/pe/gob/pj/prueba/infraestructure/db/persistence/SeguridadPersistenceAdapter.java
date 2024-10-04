@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.db.seguridad.persistence;
+package pe.gob.pj.prueba.infraestructure.db.persistence;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -34,8 +34,7 @@ public class AuditoriaGeneralConfig {
 
   @Bean(name = "auditoriaEntityManagerFactory")
   LocalContainerEntityManagerFactoryBean auditoriaEntityManagerFactory(
-      EntityManagerFactoryBuilder builder,
-      @Qualifier("cxAuditoriaGeneralDS") DataSource dataSource) {
+      EntityManagerFactoryBuilder builder, @Qualifier("cxAuditoriaGeneralDS") DataSource dataSource) {
     return builder.dataSource(dataSource)
         .packages("pe.gob.pj.prueba.infraestructure.db.auditoriageneral.entity")
         .persistenceUnit("auditoria").properties(getHibernateProperties()).build();

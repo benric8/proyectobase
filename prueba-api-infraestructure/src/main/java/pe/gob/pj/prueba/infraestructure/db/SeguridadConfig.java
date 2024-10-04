@@ -28,15 +28,15 @@ import jakarta.persistence.EntityManagerFactory;
 public class SeguridadConfig {
 
   // CONEXION CON LA BASE DE DATOS SEGURIDAD
-  @Primary
   @Bean(name = "cxSeguridadDS")
+  @Primary
   DataSource seguridadDataSource() throws NamingException {
     return (DataSource) new InitialContext()
         .lookup("java:jboss/datasources/servicioPruebaAPISeguridad");
   }
 
-  @Primary
   @Bean(name = "seguridadEntityManagerFactory")
+  @Primary
   LocalContainerEntityManagerFactoryBean seguridadEntityManagerFactory(
       EntityManagerFactoryBuilder builder, @Qualifier("cxSeguridadDS") DataSource dataSource) {
     return builder.dataSource(dataSource)
@@ -63,8 +63,7 @@ public class SeguridadConfig {
     return emf.unwrap(SessionFactory.class);
   }
 
-  //Para usar querydsl
-  @Primary
+//  Para usar querydsl
   @Bean(name = "seguridadQDSL")
   JPAQueryFactory jpaQueryFactorySeguridad(
       @Qualifier("seguridadEntityManagerFactory") EntityManagerFactory entityManagerFactory) {

@@ -2,8 +2,13 @@ package pe.gob.pj.prueba.infraestructure.db.negocio.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.FilterDefs;
+import org.hibernate.annotations.Filters;
+import org.hibernate.annotations.ParamDef;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,17 +23,14 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.FilterDefs;
-import org.hibernate.annotations.Filters;
-import org.hibernate.annotations.ParamDef;
-
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
-import pe.gob.pj.prueba.infraestructure.db.entity.AuditoriaEntity;
+import pe.gob.pj.prueba.domain.utils.ProjectUtils;
+import pe.gob.pj.prueba.infraestructure.enums.Estado;
+import pe.gob.pj.prueba.infraestructure.enums.OperacionBaseDato;
 
 @Entity
 @Data
@@ -47,7 +49,7 @@ import pe.gob.pj.prueba.infraestructure.db.entity.AuditoriaEntity;
 		@Filter(name=MovUsuario.F_ID, condition = "N_USUARIO=:"+MovUsuario.P_ID),
 		@Filter(name=MovUsuario.F_USUARIO, condition = "X_USUARIO=:"+MovUsuario.P_USUARIO)
 })
-public class MovUsuario extends AuditoriaEntity implements Serializable {/**
+public class MovUsuario implements Serializable {/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -79,5 +81,24 @@ public class MovUsuario extends AuditoriaEntity implements Serializable {/**
 	
 	@OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
 	private List<MovUsuarioPerfil> perfils = new ArrayList<MovUsuarioPerfil>();
+    
+    //Auditoria
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="F_AUD")
+    private Date fAud = new Date();
+    @Column(name="B_AUD")
+    private String bAud = OperacionBaseDato.INSERTAR.getNombre();
+    @Column(name="C_AUD_UID")
+    private String cAudId;
+    @Column(name="C_AUD_UIDRED")
+    private String cAudIdRed = ProjectUtils.getNombreRed();
+    @Column(name="C_AUD_PC")
+    private String cAudPc = ProjectUtils.getPc();
+    @Column(name="C_AUD_IP")
+    private String cAudIp = ProjectUtils.getIp();
+    @Column(name="C_AUD_MCADDR")
+    private String cAudMcAddr = ProjectUtils.getMac();
+    @Column(name = "L_ACTIVO", length = 1, nullable = false)
+    private String activo = Estado.ACTIVO_NUMERICO.getNombre();
 	
 }

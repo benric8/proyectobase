@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.db.negocio.persistence;
+package pe.gob.pj.prueba.infraestructure.db.persistence;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

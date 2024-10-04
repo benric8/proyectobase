@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.db.negocio.persistence;
+package pe.gob.pj.prueba.infraestructure.db.persistence;
 
 import java.util.List;
 import org.springframework.stereotype.Component;

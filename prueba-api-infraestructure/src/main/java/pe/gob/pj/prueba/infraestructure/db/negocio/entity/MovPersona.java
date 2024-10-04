@@ -2,7 +2,11 @@ package pe.gob.pj.prueba.infraestructure.db.negocio.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.FilterDefs;
+import org.hibernate.annotations.Filters;
+import org.hibernate.annotations.ParamDef;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,17 +20,14 @@ import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.FilterDefs;
-import org.hibernate.annotations.Filters;
-import org.hibernate.annotations.ParamDef;
-
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
-import pe.gob.pj.prueba.infraestructure.db.entity.AuditoriaEntity;
+import pe.gob.pj.prueba.domain.utils.ProjectUtils;
+import pe.gob.pj.prueba.infraestructure.enums.Estado;
+import pe.gob.pj.prueba.infraestructure.enums.OperacionBaseDato;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -49,7 +50,7 @@ import pe.gob.pj.prueba.infraestructure.db.entity.AuditoriaEntity;
 		@Filter(name=MovPersona.F_PRIMER_APELLIDO, condition = "X_PRIMER_APELLIDO=:"+MovPersona.P_PRIMER_APELLIDO),
 		@Filter(name=MovPersona.F_SEGUNDO_APELLIDO, condition = "X_SEGUNDO_APELLIDO=:"+MovPersona.P_SEGUNDO_APELLIDO)
 })
-public class MovPersona extends AuditoriaEntity implements Serializable {/**
+public class MovPersona implements Serializable {/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -93,5 +94,24 @@ public class MovPersona extends AuditoriaEntity implements Serializable {/**
 	@ManyToOne(optional = false, cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
 	@JoinColumn(name="B_TIPO_DOCUMENTO_PERSONA")
 	private MaeTipoDocumentoPersona tipoDocumento;
+    
+    //Auditoria
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="F_AUD")
+    private Date fAud = new Date();
+    @Column(name="B_AUD")
+    private String bAud = OperacionBaseDato.INSERTAR.getNombre();
+    @Column(name="C_AUD_UID")
+    private String cAudId;
+    @Column(name="C_AUD_UIDRED")
+    private String cAudIdRed = ProjectUtils.getNombreRed();
+    @Column(name="C_AUD_PC")
+    private String cAudPc = ProjectUtils.getPc();
+    @Column(name="C_AUD_IP")
+    private String cAudIp = ProjectUtils.getIp();
+    @Column(name="C_AUD_MCADDR")
+    private String cAudMcAddr = ProjectUtils.getMac();
+    @Column(name = "L_ACTIVO", length = 1, nullable = false)
+    private String activo = Estado.ACTIVO_NUMERICO.getNombre();
 
 }
