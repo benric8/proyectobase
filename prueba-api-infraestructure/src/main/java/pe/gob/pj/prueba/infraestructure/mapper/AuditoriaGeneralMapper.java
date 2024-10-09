@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import pe.gob.pj.prueba.domain.model.auditoriageneral.AuditoriaAplicativos;
-import pe.gob.pj.prueba.infraestructure.db.entity.auditoriageneral.MovAuditoriaAplicativosEntity;
+import pe.gob.pj.prueba.infraestructure.db.auditoriageneral.entity.MovAuditoriaAplicativosEntity;
 import pe.gob.pj.prueba.infraestructure.rest.request.AuditoriaRequest;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
@@ -25,11 +25,20 @@ public interface AuditoriaGeneralMapper {
   @Mapping(target = "codigoRespuesta", source = "codigoRespuesta")
   @Mapping(target = "descripcionRespuesta", source = "descripcionRespuesta")
   @Mapping(target = "duracionRespuesta", source = "tiempo")
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "peticionBody", ignore = true)
   AuditoriaAplicativos toAuditoriaAplicativos(AuditoriaRequest auditoriaRequest, String cuo,
       String ips, String usuauth, String uri, String peticionUrl, String herramientaConsume,
       String codigoRespuesta, String descripcionRespuesta, long tiempo);
 
   @Mapping(target = "CAudId", source = "usuarioAuth")
+  @Mapping(target = "activo", ignore = true)
+  @Mapping(target = "BAud", ignore = true)
+  @Mapping(target = "CAudIdRed", ignore = true)
+  @Mapping(target = "CAudIp", ignore = true)
+  @Mapping(target = "CAudMcAddr", ignore = true)
+  @Mapping(target = "CAudPc", ignore = true)
+  @Mapping(target = "FAud", ignore = true)
   MovAuditoriaAplicativosEntity toMovAuditoriaAplicativos(
       AuditoriaAplicativos auditoriaAplicativos);
 

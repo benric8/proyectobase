@@ -1,61 +1,39 @@
 package pe.gob.pj.prueba.infraestructure.db.persistence;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import org.hibernate.Session;
 import org.springframework.stereotype.Component;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import pe.gob.pj.prueba.domain.model.servicio.Persona;
+import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.domain.port.persistence.GestionPersonaPersistencePort;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
-import pe.gob.pj.prueba.infraestructure.db.entity.servicio.MaeTipoDocumentoPersona;
-import pe.gob.pj.prueba.infraestructure.db.entity.servicio.MovPersona;
+import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MaeTipoDocumentoPersona;
+import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MovPersona;
+import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MaeTipoDocumentoRepository;
+import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MovPersonaRepository;
 import pe.gob.pj.prueba.infraestructure.enums.Estado;
 
-@Component("gestionPersonaPersistencePort")
+@Component
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class GestionPersonaPersistenceAdapter implements GestionPersonaPersistencePort {
 
-  @PersistenceContext(unitName = "negocio")
-  private EntityManager entityManager;
+  final MovPersonaRepository movPersonaRepository;
+  final MaeTipoDocumentoRepository maeTipoDocumentoRepository;
 
   @Override
-  public List<Persona> buscarPersona(String cuo, Map<String, Object> filters) throws Exception {
-    List<Persona> lista = new ArrayList<>();
-    if (!ProjectUtils.isNullOrEmpty(filters.get(Persona.P_NUMERO_DOCUMENTO))) {
-      entityManager.unwrap(Session.class).enableFilter(MovPersona.F_DOCUMENTO_IDENTIDAD)
-          .setParameter(MovPersona.P_DOCUMENTO_IDENTIDAD, filters.get(Persona.P_NUMERO_DOCUMENTO));
-    }
-    TypedQuery<MovPersona> query =
-        entityManager.createNamedQuery(MovPersona.Q_ALL, MovPersona.class);
-    query.getResultStream().forEach(movUsuario -> {
-      Persona personaDto = new Persona();
-      personaDto.setId(movUsuario.getId());
-      personaDto.setPrimerApellido(movUsuario.getPrimerApellido());
-      personaDto.setSegundoApellido(movUsuario.getSegundoApellido());
-      personaDto.setNombres(movUsuario.getNombres());
-      personaDto.setNumeroDocumento(movUsuario.getNumeroDocumento());
-      personaDto.setTelefono(movUsuario.getTelefono());
-      personaDto.setCorreo(movUsuario.getCorreo());
-      personaDto.setIdTipoDocumento(movUsuario.getTipoDocumento().getCodigo());
-      personaDto.setTipoDocumento(movUsuario.getTipoDocumento().getAbreviatura());
-      personaDto.setFechaNacimiento(ProjectUtils.convertDateToString(
-          movUsuario.getFechaNacimiento(), ProjectConstants.Formato.FECHA_DD_MM_YYYY));
-      personaDto.setSexo(movUsuario.getSexo());
-      personaDto.setActivo(movUsuario.getActivo());
-      lista.add(personaDto);
-    });
-    return lista;
+  public List<Persona> buscarPersona(String cuo, ConsultarPersonaQuery filters) throws Exception {
+     return movPersonaRepository.buscarPersona(filters);
   }
 
   @Override
   public void registrarPersona(String cuo, Persona persona) throws Exception {
-    MaeTipoDocumentoPersona maeTipoDocumento = new MaeTipoDocumentoPersona();
-    maeTipoDocumento.setCodigo(persona.getIdTipoDocumento());
-    MovPersona movPersona = new MovPersona();
+    var maeTipoDocumento =
+        maeTipoDocumentoRepository.findById(persona.getIdTipoDocumento()).orElseThrow();
+    var movPersona = new MovPersona();
     movPersona.setTipoDocumento(maeTipoDocumento);
     movPersona.setNumeroDocumento(persona.getNumeroDocumento());
     movPersona.setPrimerApellido(persona.getPrimerApellido());
@@ -69,35 +47,34 @@ public class GestionPersonaPersistenceAdapter implements GestionPersonaPersisten
     movPersona.setActivo(!Estado.INACTIVO_NUMERICO.getNombre().equals(persona.getActivo())
         ? Estado.ACTIVO_NUMERICO.getNombre()
         : Estado.INACTIVO_NUMERICO.getNombre());
-    entityManager.persist(movPersona);
+    movPersonaRepository.save(movPersona);
     persona.setId(movPersona.getId());
   }
 
   @Override
   public void actualizarPersona(String cuo, Persona persona) throws Exception {
-    entityManager.unwrap(Session.class).enableFilter(MovPersona.F_ID).setParameter(MovPersona.P_ID,
-        persona.getId());
-    TypedQuery<MovPersona> query =
-        entityManager.createNamedQuery(MovPersona.Q_ALL, MovPersona.class);
-    MovPersona movPersona = query.getSingleResult();
-    if (!movPersona.getTipoDocumento().getCodigo().equals(persona.getIdTipoDocumento())) {
-      MaeTipoDocumentoPersona maeTipoDocumento = new MaeTipoDocumentoPersona();
-      maeTipoDocumento.setCodigo(persona.getIdTipoDocumento());
-      movPersona.setTipoDocumento(maeTipoDocumento);
-    }
-    movPersona.setNumeroDocumento(persona.getNumeroDocumento());
-    movPersona.setPrimerApellido(persona.getPrimerApellido());
-    movPersona.setSegundoApellido(persona.getSegundoApellido());
-    movPersona.setNombres(persona.getNombres());
-    movPersona.setSexo(persona.getSexo());
-    movPersona.setCorreo(persona.getCorreo());
-    movPersona.setTelefono(persona.getTelefono());
-    movPersona.setFechaNacimiento(ProjectUtils.parseStringToDate(persona.getFechaNacimiento(),
-        ProjectConstants.Formato.FECHA_DD_MM_YYYY));
-    movPersona.setActivo(!Estado.INACTIVO_NUMERICO.getNombre().equals(persona.getActivo())
-        ? Estado.ACTIVO_NUMERICO.getNombre()
-        : Estado.INACTIVO_NUMERICO.getNombre());
-    entityManager.merge(movPersona);
+
+    var movPersona2 = movPersonaRepository.findById(persona.getId());
+    movPersona2.ifPresent(mov -> {
+      if (!mov.getTipoDocumento().getCodigo().equals(persona.getIdTipoDocumento())) {
+        var maeTipoDocumento = new MaeTipoDocumentoPersona();
+        maeTipoDocumento.setCodigo(persona.getIdTipoDocumento());
+        mov.setTipoDocumento(maeTipoDocumento);
+      }
+      mov.setNumeroDocumento(persona.getNumeroDocumento());
+      mov.setPrimerApellido(persona.getPrimerApellido());
+      mov.setSegundoApellido(persona.getSegundoApellido());
+      mov.setNombres(persona.getNombres());
+      mov.setSexo(persona.getSexo());
+      mov.setCorreo(persona.getCorreo());
+      mov.setTelefono(persona.getTelefono());
+      mov.setFechaNacimiento(ProjectUtils.parseStringToDate(persona.getFechaNacimiento(),
+          ProjectConstants.Formato.FECHA_DD_MM_YYYY));
+      mov.setActivo(!Estado.INACTIVO_NUMERICO.getNombre().equals(persona.getActivo())
+          ? Estado.ACTIVO_NUMERICO.getNombre()
+          : Estado.INACTIVO_NUMERICO.getNombre());
+    });
+
   }
 
 }

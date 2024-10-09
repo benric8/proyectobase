@@ -11,15 +11,18 @@ public class SwaggerConfig {
 
   @Bean
   OpenAPI apiInfo() {
-    return new OpenAPI().info(new Info().title("Consulta Servicios de Pide").description(
-        "Servicio que permite mostrar base de proyecto rest")
-        .version("1.0.0"));
+    return new OpenAPI()
+        .info(new Info()
+            .title("Prueba Api Rest")
+            .version("1.0.0"));
   }
 
   @Bean
   GroupedOpenApi publicApi() {
-    return GroupedOpenApi.builder().group("public").pathsToMatch("/api/**")
-        .packagesToScan("pe.gob.pj.prueba.infraestructure.rest").build();
+    return GroupedOpenApi.builder()
+        .group("public")
+        .pathsToMatch("/prueba-api/**")
+        .build();
   }
 
 }

@@ -3,16 +3,27 @@ package pe.gob.pj.prueba.infraestructure.rest.response;
 import java.io.Serializable;
 
 import lombok.Data;
+import pe.gob.pj.prueba.domain.enums.Errors;
 
 @Data
-public class GlobalResponse implements Serializable{/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	private String codigo;
-	private String descripcion;
-	private Object data;
-	private String codigoOperacion;
+abstract class GlobalResponse implements Serializable {
+  /**
+  * 
+  */
+  private static final long serialVersionUID = 1L;
+
+  private String codigo;
+  private String descripcion;
+  private String codigoOperacion;
+
+  GlobalResponse() {
+    this.codigo = Errors.OPERACION_EXITOSA.getCodigo();
+    this.descripcion = Errors.OPERACION_EXITOSA.getNombre();
+  }
+  
+  public void errorInesperado(String proceso) {
+    this.codigo = Errors.ERROR_INESPERADO.getCodigo();
+    this.descripcion = String.format(Errors.ERROR_INESPERADO.getNombre(), proceso);
+  }
 
 }

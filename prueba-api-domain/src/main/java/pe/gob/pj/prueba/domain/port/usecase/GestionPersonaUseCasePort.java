@@ -1,9 +1,8 @@
 package pe.gob.pj.prueba.domain.port.usecase;
 
 import java.util.List;
-import java.util.Map;
-
 import pe.gob.pj.prueba.domain.model.servicio.Persona;
+import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
 
 public interface GestionPersonaUseCasePort {
 
@@ -16,7 +15,7 @@ public interface GestionPersonaUseCasePort {
 	 * @return Lista del modelo Persona que coinciden con los filtros enviados
 	 * @throws Exception
 	 */
-	public List<Persona> buscarPersona(String cuo, Map<String, Object> filters) throws Exception;
+	public List<Persona> buscarPersona(String cuo, ConsultarPersonaQuery query) throws Exception;
 
 	/**
 	 * 

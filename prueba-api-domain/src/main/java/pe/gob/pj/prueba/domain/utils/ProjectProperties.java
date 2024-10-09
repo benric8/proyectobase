@@ -2,7 +2,6 @@ package pe.gob.pj.prueba.domain.utils;
 
 import java.io.Serializable;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -26,7 +25,6 @@ public class ProjectProperties implements Serializable {
     private static String captchaUrl;
     private static String captchaToken;
 
-    @Autowired
     public ProjectProperties(
             @Value("${configuracion.seguridad.secretToken:null}") String seguridadSecretToken,
             @Value("${configuracion.seguridad.idaplicativo:0}") Integer seguridadIdAplicativo,

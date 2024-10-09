@@ -1,5 +1,6 @@
 package pe.gob.pj.prueba.infraestructure.security;
 
+import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,6 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,9 +33,9 @@ public class SecurityConfig {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.addAllowedHeader("*");
-    configuration.addAllowedOrigin("*");
-    configuration.addAllowedMethod("*");
+    configuration.setAllowedOrigins(Arrays.asList("*"));
+    configuration.setAllowedMethods(Arrays.asList("*"));
+    configuration.setAllowedHeaders(Arrays.asList("*"));
     final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
@@ -41,20 +43,19 @@ public class SecurityConfig {
 
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
+    http.headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin))
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(
-            authz -> authz
-                .requestMatchers("/", "/healthcheck", "/css/**", "/v3/api-docs/**",
-                    "/swagger-ui/**", "/swagger-ui.html", "/configuration/ui",
-                    "/swagger-resources/**", "/configuration/security", "/webjars/**")
-                .permitAll().anyRequest().authenticated())
+        .authorizeHttpRequests(authz -> authz
+            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
+            .permitAll()
+            .requestMatchers("/healthcheck")
+            .permitAll()
+            .anyRequest().authenticated())
         .addFilter(new JwtAuthenticationFilter(authenticationManager(), seguridadService))
         .addFilter(new JwtAuthorizationFilter(authenticationManager(), seguridadService))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
     return http.build();
   }
 
