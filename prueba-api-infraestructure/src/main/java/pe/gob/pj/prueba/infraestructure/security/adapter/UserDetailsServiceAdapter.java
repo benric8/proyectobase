@@ -45,10 +45,10 @@ public class UserDetailsServiceAdapter implements UserDetailsService, Serializab
     var user = new UserSecurity();
     try {
       var u = service.recuperaInfoUsuario("", username);
-      if (u != null && u.getId() > 0) {
-        user.setId(u.getId());
-        user.setName(u.getCUsuario());
-        user.setPassword(passwordEncoder.encode(u.getCClave()));
+      if (u != null && u.id() > 0) {
+        user.setId(u.id());
+        user.setName(u.cUsuario());
+        user.setPassword(passwordEncoder.encode(u.cClave()));
         var roles = new ArrayList<RoleSecurity>();
         var rolesB = service.recuperarRoles("", username);
         rolesB.forEach(rol -> {

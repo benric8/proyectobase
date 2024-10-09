@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.rest.exceptions;
+package pe.gob.pj.prueba.infraestructure.rest.advise;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ import pe.gob.pj.prueba.domain.utils.ProjectUtils;
 
 @Slf4j
 @ControllerAdvice
-public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
 
   /**
    * Error handle for @Validate For Validating Path Variables and Request Parameters

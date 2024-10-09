@@ -13,7 +13,7 @@ public class SwaggerConfig {
   OpenAPI apiInfo() {
     return new OpenAPI()
         .info(new Info()
-            .title("Base Api Rest")
+            .title("Prueba Api Rest")
             .version("1.0.0"));
   }
 

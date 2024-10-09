@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import pe.gob.pj.prueba.domain.model.seguridad.Rol;
 import pe.gob.pj.prueba.domain.model.seguridad.Usuario;
+import pe.gob.pj.prueba.domain.model.seguridad.query.AutenticacionUsuarioQuery;
 import pe.gob.pj.prueba.domain.port.persistence.SeguridadPersistencePort;
 import pe.gob.pj.prueba.domain.port.usecase.SeguridadUseCasePort;
 
@@ -25,10 +26,8 @@ public class SeguridadUseCaseAdapter implements SeguridadUseCasePort {
   @Override
   @Transactional(transactionManager = "txManagerSeguridad", propagation = Propagation.REQUIRED,
       readOnly = true, rollbackFor = {Exception.class, SQLException.class})
-  public String autenticarUsuario(String cuo, String codigoCliente, String codigoRol,
-      String usuario, String clave) throws Exception {
-    return seguridadPersistencePort.autenticarUsuario(cuo, codigoCliente, codigoRol, usuario,
-        clave);
+  public String autenticarUsuario(String cuo, AutenticacionUsuarioQuery query) throws Exception {
+    return seguridadPersistencePort.autenticarUsuario(cuo, query);
   }
 
   @Override

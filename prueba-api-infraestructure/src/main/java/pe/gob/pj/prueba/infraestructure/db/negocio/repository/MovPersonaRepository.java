@@ -1,10 +1,10 @@
 package pe.gob.pj.prueba.infraestructure.db.negocio.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MovPersona;
 
-@Repository("")
-public interface MovPersonaRepository extends JpaRepository<MovPersona, Integer>, MovPersonaDslRepository {
+
+public interface MovPersonaRepository
+    extends JpaRepository<MovPersona, Integer>, MovPersonaDslRepository {
 
 }

@@ -1,10 +1,10 @@
 package pe.gob.pj.prueba.infraestructure.db.persistence;
 
-import org.hibernate.Session;
+import java.util.Objects;
 import org.springframework.stereotype.Component;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import pe.gob.pj.prueba.domain.model.servicio.Opcion;
 import pe.gob.pj.prueba.domain.model.servicio.PerfilOpcions;
 import pe.gob.pj.prueba.domain.model.servicio.PerfilUsuario;
@@ -13,76 +13,59 @@ import pe.gob.pj.prueba.domain.port.persistence.AccesoPersistencePort;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
 import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MaeOpcion;
-import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MaePerfil;
-import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MovUsuario;
+import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MaePerfilRepository;
+import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MovUsuarioRepository;
 import pe.gob.pj.prueba.infraestructure.enums.Estado;
 
-@Component("accesoPersistencePort")
+@Component
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class AccesoPersistenceAdapter implements AccesoPersistencePort {
 
-  @PersistenceContext(unitName = "negocio")
-  private EntityManager entityManager;
+  final MovUsuarioRepository movUsuarioRepository;
+  final MaePerfilRepository maePerfilRepository;
 
   @Override
   public Usuario iniciarSesion(String cuo, String usuario) throws Exception {
     Usuario usuarioDTO = new Usuario();
-    MovUsuario movUsuario;
+    movUsuarioRepository.findByActivoAndUsuario(Estado.ACTIVO_NUMERICO.getNombre(), usuario)
+        .ifPresent(movUsuario -> {
+          usuarioDTO.setIdUsuario(movUsuario.getId());
+          usuarioDTO.setUsuario(movUsuario.getUsuario());
+          usuarioDTO.setClave(movUsuario.getClave());
 
-    entityManager.unwrap(Session.class).enableFilter(MovUsuario.F_ACCESO)
-        .setParameter(MovUsuario.P_ACTIVO, Estado.ACTIVO_NUMERICO.getNombre())
-        .setParameter(MovUsuario.P_USUARIO, usuario);
+          usuarioDTO.getPersona().setId(movUsuario.getPersona().getId());
+          usuarioDTO.getPersona().setPrimerApellido(movUsuario.getPersona().getPrimerApellido());
+          usuarioDTO.getPersona().setSegundoApellido(movUsuario.getPersona().getSegundoApellido());
+          usuarioDTO.getPersona().setNombres(movUsuario.getPersona().getNombres());
+          usuarioDTO.getPersona().setNumeroDocumento(movUsuario.getPersona().getNumeroDocumento());
+          usuarioDTO.getPersona().setTelefono(movUsuario.getPersona().getTelefono());
+          usuarioDTO.getPersona().setCorreo(movUsuario.getPersona().getCorreo());
+          usuarioDTO.getPersona()
+              .setIdTipoDocumento(movUsuario.getPersona().getTipoDocumento().getCodigo());
+          usuarioDTO.getPersona()
+              .setTipoDocumento(movUsuario.getPersona().getTipoDocumento().getAbreviatura());
+          usuarioDTO.getPersona().setFechaNacimiento(
+              ProjectUtils.convertDateToString(movUsuario.getPersona().getFechaNacimiento(),
+                  ProjectConstants.Formato.FECHA_DD_MM_YYYY));
+          usuarioDTO.getPersona().setSexo(movUsuario.getPersona().getSexo());
+          usuarioDTO.getPersona().setActivo(movUsuario.getPersona().getActivo());
 
-    TypedQuery<MovUsuario> query =
-        entityManager.createNamedQuery(MovUsuario.Q_ALL, MovUsuario.class);
-    movUsuario = query.getResultStream().findFirst().orElse(null);
-
-    if (movUsuario != null) {
-      usuarioDTO.setIdUsuario(movUsuario.getId());
-      usuarioDTO.setUsuario(movUsuario.getUsuario());
-      usuarioDTO.setClave(movUsuario.getClave());
-
-      usuarioDTO.getPersona().setId(movUsuario.getPersona().getId());
-      usuarioDTO.getPersona().setPrimerApellido(movUsuario.getPersona().getPrimerApellido());
-      usuarioDTO.getPersona().setSegundoApellido(movUsuario.getPersona().getSegundoApellido());
-      usuarioDTO.getPersona().setNombres(movUsuario.getPersona().getNombres());
-      usuarioDTO.getPersona().setNumeroDocumento(movUsuario.getPersona().getNumeroDocumento());
-      usuarioDTO.getPersona().setTelefono(movUsuario.getPersona().getTelefono());
-      usuarioDTO.getPersona().setCorreo(movUsuario.getPersona().getCorreo());
-      usuarioDTO.getPersona()
-          .setIdTipoDocumento(movUsuario.getPersona().getTipoDocumento().getCodigo());
-      usuarioDTO.getPersona()
-          .setTipoDocumento(movUsuario.getPersona().getTipoDocumento().getAbreviatura());
-      usuarioDTO.getPersona().setFechaNacimiento(ProjectUtils.convertDateToString(
-          movUsuario.getPersona().getFechaNacimiento(), ProjectConstants.Formato.FECHA_DD_MM_YYYY));
-      usuarioDTO.getPersona().setSexo(movUsuario.getPersona().getSexo());
-      usuarioDTO.getPersona().setActivo(movUsuario.getPersona().getActivo());
-
-      movUsuario.getPerfils().forEach(perfilUsuario -> {
-        if (perfilUsuario.getActivo().equalsIgnoreCase(Estado.ACTIVO_NUMERICO.getNombre())) {
-          usuarioDTO.getPerfiles()
-              .add(new PerfilUsuario(perfilUsuario.getId(), perfilUsuario.getPerfil().getId(),
-                  perfilUsuario.getPerfil().getNombre(), perfilUsuario.getPerfil().getRol()));
-        }
-      });
-    }
+          movUsuario.getPerfils().forEach(perfilUsuario -> {
+            if (perfilUsuario.getActivo().equalsIgnoreCase(Estado.ACTIVO_NUMERICO.getNombre())) {
+              usuarioDTO.getPerfiles()
+                  .add(new PerfilUsuario(perfilUsuario.getId(), perfilUsuario.getPerfil().getId(),
+                      perfilUsuario.getPerfil().getNombre(), perfilUsuario.getPerfil().getRol()));
+            }
+          });
+        });
     return usuarioDTO;
   }
 
   @Override
   public PerfilOpcions obtenerOpciones(String cuo, Integer idPerfil) throws Exception {
     PerfilOpcions perfilOpciones = new PerfilOpcions();
-    MaePerfil maePerfil;
-
-    entityManager.unwrap(Session.class).enableFilter(MaePerfil.F_ACTIVO)
-        .setParameter(MaePerfil.P_ACTIVO, Estado.ACTIVO_NUMERICO.getNombre());
-
-    entityManager.unwrap(Session.class).enableFilter(MaePerfil.F_ID).setParameter(MaePerfil.P_ID,
-        idPerfil);
-
-    TypedQuery<MaePerfil> query = entityManager.createNamedQuery(MaePerfil.Q_ALL, MaePerfil.class);
-    maePerfil = query.getResultStream().findFirst().orElse(null);
-
-    if (maePerfil != null) {
+    maePerfilRepository.findById(idPerfil).ifPresent(maePerfil -> {
       perfilOpciones.setRol(maePerfil.getRol());
       maePerfil.getPerfilsOpcion().forEach(x -> {
         if (x.getActivo().equalsIgnoreCase(Estado.ACTIVO_NUMERICO.getNombre())) {
@@ -96,14 +79,15 @@ public class AccesoPersistenceAdapter implements AccesoPersistencePort {
           opcion.setOrden(maeOpcion.getOrden());
           opcion.setActivo(maeOpcion.getActivo());
           opcion.setIdOpcionSuperior(
-              maeOpcion.getOpcionSuperior() != null ? maeOpcion.getOpcionSuperior().getId() : null);
-          opcion.setNombreOpcionSuperior(
-              maeOpcion.getOpcionSuperior() != null ? maeOpcion.getOpcionSuperior().getNombre()
+              Objects.nonNull(maeOpcion.getOpcionSuperior()) ? maeOpcion.getOpcionSuperior().getId()
                   : null);
+          opcion.setNombreOpcionSuperior(Objects.nonNull(maeOpcion.getOpcionSuperior())
+              ? maeOpcion.getOpcionSuperior().getNombre()
+              : null);
           perfilOpciones.getOpciones().add(opcion);
         }
       });
-    }
+    });
     return perfilOpciones;
   }
 

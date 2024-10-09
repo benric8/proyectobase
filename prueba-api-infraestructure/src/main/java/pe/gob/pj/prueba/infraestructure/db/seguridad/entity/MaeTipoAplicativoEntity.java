@@ -6,7 +6,6 @@ import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -30,42 +29,42 @@ import pe.gob.pj.prueba.infraestructure.enums.OperacionBaseDato;
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Entity
-@Table(name="mae_tipo_aplicativo", schema = SecurityConstants.ESQUEMA_SEGURIDAD)
-@NamedQuery(name="MaeTipoAplicativo.findAll", query="SELECT m FROM MaeTipoAplicativoEntity m")
+@Table(name = "mae_tipo_aplicativo", schema = SecurityConstants.ESQUEMA_SEGURIDAD)
 public class MaeTipoAplicativoEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name="n_tipo_aplicativo")
-	private Integer nTipoAplicativo;
+  private static final long serialVersionUID = 1L;
 
-	@Column(name="x_descripcion")
-	private String xDescripcion;
+  @Id
+  @Column(name = "n_tipo_aplicativo")
+  private Integer nTipoAplicativo;
 
-	@Column(name="x_tipo_aplicativo")
-	private String xTipoAplicativo;
+  @Column(name = "x_descripcion")
+  private String xDescripcion;
 
-	//bi-directional many-to-one association to MaeAplicativo
-	@OneToMany(mappedBy="maeTipoAplicativo")
-	private List<MaeAplicativoEntity> maeAplicativos;
-    
-    //Auditoria
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="F_AUD")
-    private Date fAud = new Date();
-    @Column(name="B_AUD")
-    private String bAud = OperacionBaseDato.INSERTAR.getNombre();
-    @Column(name="C_AUD_UID")
-    private String cAudId;
-    @Column(name="C_AUD_UIDRED")
-    private String cAudIdRed = ProjectUtils.getNombreRed();
-    @Column(name="C_AUD_PC")
-    private String cAudPc = ProjectUtils.getPc();
-    @Column(name="C_AUD_IP")
-    private String cAudIp = ProjectUtils.getIp();
-    @Column(name="C_AUD_MCADDR")
-    private String cAudMcAddr = ProjectUtils.getMac();
-    @Column(name = "L_ACTIVO", length = 1, nullable = false)
-    private String activo = Estado.ACTIVO_NUMERICO.getNombre();
+  @Column(name = "x_tipo_aplicativo")
+  private String xTipoAplicativo;
+
+  // bi-directional many-to-one association to MaeAplicativo
+  @OneToMany(mappedBy = "maeTipoAplicativo")
+  private List<MaeAplicativoEntity> maeAplicativos;
+
+  // Auditoria
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "F_AUD")
+  private Date fAud = new Date();
+  @Column(name = "B_AUD")
+  private String bAud = OperacionBaseDato.INSERTAR.getNombre();
+  @Column(name = "C_AUD_UID")
+  private String cAudId;
+  @Column(name = "C_AUD_UIDRED")
+  private String cAudIdRed = ProjectUtils.getNombreRed();
+  @Column(name = "C_AUD_PC")
+  private String cAudPc = ProjectUtils.getPc();
+  @Column(name = "C_AUD_IP")
+  private String cAudIp = ProjectUtils.getIp();
+  @Column(name = "C_AUD_MCADDR")
+  private String cAudMcAddr = ProjectUtils.getMac();
+  @Column(name = "L_ACTIVO", length = 1, nullable = false)
+  private String activo = Estado.ACTIVO_NUMERICO.getNombre();
 
 }

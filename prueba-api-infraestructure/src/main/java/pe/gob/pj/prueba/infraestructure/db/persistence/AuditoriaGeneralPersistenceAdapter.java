@@ -9,7 +9,7 @@ import pe.gob.pj.prueba.domain.port.persistence.AuditoriaGeneralPersistencePort;
 import pe.gob.pj.prueba.infraestructure.db.auditoriageneral.entity.MovAuditoriaAplicativosEntity;
 import pe.gob.pj.prueba.infraestructure.mapper.AuditoriaGeneralMapper;
 
-@Component("auditoriaGeneralPersistencePort")
+@Component
 public class AuditoriaGeneralPersistenceAdapter implements AuditoriaGeneralPersistencePort {
 
   @Autowired

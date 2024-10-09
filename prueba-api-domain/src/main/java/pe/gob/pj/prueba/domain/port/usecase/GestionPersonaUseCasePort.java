@@ -1,10 +1,8 @@
 package pe.gob.pj.prueba.domain.port.usecase;
 
 import java.util.List;
-import java.util.Map;
-
 import pe.gob.pj.prueba.domain.model.servicio.Persona;
-import pe.gob.pj.prueba.domain.query.ConsultarPersonaQuery;
+import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
 
 public interface GestionPersonaUseCasePort {
 

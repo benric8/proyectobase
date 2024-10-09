@@ -6,7 +6,6 @@ import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -30,48 +29,48 @@ import pe.gob.pj.prueba.infraestructure.enums.OperacionBaseDato;
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Entity
-@Table(name="mae_cliente", schema = SecurityConstants.ESQUEMA_SEGURIDAD)
-@NamedQuery(name="MaeCliente.findAll", query="SELECT m FROM MaeClienteEntity m")
+@Table(name = "mae_cliente", schema = SecurityConstants.ESQUEMA_SEGURIDAD)
 public class MaeClienteEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name="n_cliente")
-	private Integer nCliente;
+  private static final long serialVersionUID = 1L;
 
-	@Column(name="c_cliente")
-	private String cCliente;
+  @Id
+  @Column(name = "n_cliente")
+  private Integer nCliente;
 
-	@Column(name="l_tipo_cliente")
-	private String lTipoCliente;
+  @Column(name = "c_cliente")
+  private String cCliente;
 
-	@Column(name="x_cliente")
-	private String xCliente;
+  @Column(name = "l_tipo_cliente")
+  private String lTipoCliente;
 
-	@Column(name="x_descripcion")
-	private String xDescripcion;
+  @Column(name = "x_cliente")
+  private String xCliente;
 
-	//bi-directional many-to-one association to MaeUsuario
-	@OneToMany(mappedBy="maeCliente")
-	private List<MaeUsuarioEntity> maeUsuarios;
-    
-    //Auditoria
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="F_AUD")
-    private Date fAud = new Date();
-    @Column(name="B_AUD")
-    private String bAud = OperacionBaseDato.INSERTAR.getNombre();
-    @Column(name="C_AUD_UID")
-    private String cAudId;
-    @Column(name="C_AUD_UIDRED")
-    private String cAudIdRed = ProjectUtils.getNombreRed();
-    @Column(name="C_AUD_PC")
-    private String cAudPc = ProjectUtils.getPc();
-    @Column(name="C_AUD_IP")
-    private String cAudIp = ProjectUtils.getIp();
-    @Column(name="C_AUD_MCADDR")
-    private String cAudMcAddr = ProjectUtils.getMac();
-    @Column(name = "L_ACTIVO", length = 1, nullable = false)
-    private String activo = Estado.ACTIVO_NUMERICO.getNombre();
+  @Column(name = "x_descripcion")
+  private String xDescripcion;
+
+  // bi-directional many-to-one association to MaeUsuario
+  @OneToMany(mappedBy = "maeCliente")
+  private List<MaeUsuarioEntity> maeUsuarios;
+
+  // Auditoria
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "F_AUD")
+  private Date fAud = new Date();
+  @Column(name = "B_AUD")
+  private String bAud = OperacionBaseDato.INSERTAR.getNombre();
+  @Column(name = "C_AUD_UID")
+  private String cAudId;
+  @Column(name = "C_AUD_UIDRED")
+  private String cAudIdRed = ProjectUtils.getNombreRed();
+  @Column(name = "C_AUD_PC")
+  private String cAudPc = ProjectUtils.getPc();
+  @Column(name = "C_AUD_IP")
+  private String cAudIp = ProjectUtils.getIp();
+  @Column(name = "C_AUD_MCADDR")
+  private String cAudMcAddr = ProjectUtils.getMac();
+  @Column(name = "L_ACTIVO", length = 1, nullable = false)
+  private String activo = Estado.ACTIVO_NUMERICO.getNombre();
 
 }

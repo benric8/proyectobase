@@ -6,7 +6,6 @@ import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -30,52 +29,49 @@ import pe.gob.pj.prueba.infraestructure.enums.OperacionBaseDato;
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Entity
-@Table(name="mae_rol", schema = SecurityConstants.ESQUEMA_SEGURIDAD)
-@NamedQuery(name="MaeRol.findAll", query="SELECT m FROM MaeRolEntity m")
-@NamedQuery(name=MaeRolEntity.FIND_ROLES_BY_ID_USUARIO, query="SELECT m FROM MaeRolEntity m JOIN m.maeRolUsuarios ur WHERE m.activo = '1' AND ur.maeUsuario.nUsuario = :idUsuario")
+@Table(name = "mae_rol", schema = SecurityConstants.ESQUEMA_SEGURIDAD)
 public class MaeRolEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
-	
-	public static final String FIND_ROLES_BY_ID_USUARIO = "MaeRol.rolesPorUsuario";
 
-	@Id
-	@Column(name="n_rol")
-	private Integer nRol;
+  private static final long serialVersionUID = 1L;
 
-	@Column(name="c_rol")
-	private String cRol;
+  @Id
+  @Column(name = "n_rol")
+  private Integer nRol;
 
-	@Column(name="x_descripcion")
-	private String xDescripcion;
+  @Column(name = "c_rol")
+  private String cRol;
 
-	@Column(name="x_rol")
-	private String xRol;
+  @Column(name = "x_descripcion")
+  private String xDescripcion;
 
-	//bi-directional many-to-one association to MaeOperacion
-	@OneToMany(mappedBy="maeRol")
-	private List<MaeOperacionEntity> maeOperacions;
+  @Column(name = "x_rol")
+  private String xRol;
 
-	//bi-directional many-to-one association to MaeRolUsuario
-	@OneToMany(mappedBy="maeRol")
-	private List<MaeRolUsuarioEntity> maeRolUsuarios;
-    
-    //Auditoria
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="F_AUD")
-    private Date fAud = new Date();
-    @Column(name="B_AUD")
-    private String bAud = OperacionBaseDato.INSERTAR.getNombre();
-    @Column(name="C_AUD_UID")
-    private String cAudId;
-    @Column(name="C_AUD_UIDRED")
-    private String cAudIdRed = ProjectUtils.getNombreRed();
-    @Column(name="C_AUD_PC")
-    private String cAudPc = ProjectUtils.getPc();
-    @Column(name="C_AUD_IP")
-    private String cAudIp = ProjectUtils.getIp();
-    @Column(name="C_AUD_MCADDR")
-    private String cAudMcAddr = ProjectUtils.getMac();
-    @Column(name = "L_ACTIVO", length = 1, nullable = false)
-    private String activo = Estado.ACTIVO_NUMERICO.getNombre();
+  // bi-directional many-to-one association to MaeOperacion
+  @OneToMany(mappedBy = "maeRol")
+  private List<MaeOperacionEntity> maeOperacions;
+
+  // bi-directional many-to-one association to MaeRolUsuario
+  @OneToMany(mappedBy = "maeRol")
+  private List<MaeRolUsuarioEntity> maeRolUsuarios;
+
+  // Auditoria
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "F_AUD")
+  private Date fAud = new Date();
+  @Column(name = "B_AUD")
+  private String bAud = OperacionBaseDato.INSERTAR.getNombre();
+  @Column(name = "C_AUD_UID")
+  private String cAudId;
+  @Column(name = "C_AUD_UIDRED")
+  private String cAudIdRed = ProjectUtils.getNombreRed();
+  @Column(name = "C_AUD_PC")
+  private String cAudPc = ProjectUtils.getPc();
+  @Column(name = "C_AUD_IP")
+  private String cAudIp = ProjectUtils.getIp();
+  @Column(name = "C_AUD_MCADDR")
+  private String cAudMcAddr = ProjectUtils.getMac();
+  @Column(name = "L_ACTIVO", length = 1, nullable = false)
+  private String activo = Estado.ACTIVO_NUMERICO.getNombre();
 
 }

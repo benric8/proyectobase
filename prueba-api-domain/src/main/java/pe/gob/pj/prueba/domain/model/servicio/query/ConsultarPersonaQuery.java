@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.domain.query;
+package pe.gob.pj.prueba.domain.model.servicio.query;
 
 import lombok.AccessLevel;
 import lombok.Builder;

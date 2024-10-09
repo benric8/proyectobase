@@ -14,9 +14,9 @@ import pe.gob.pj.prueba.domain.enums.Errors;
 import pe.gob.pj.prueba.domain.enums.Proceso;
 import pe.gob.pj.prueba.domain.exceptions.ErrorException;
 import pe.gob.pj.prueba.domain.model.servicio.Persona;
+import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.domain.port.persistence.GestionPersonaPersistencePort;
 import pe.gob.pj.prueba.domain.port.usecase.GestionPersonaUseCasePort;
-import pe.gob.pj.prueba.domain.query.ConsultarPersonaQuery;
 
 @Service("gestionPersonaUseCasePort")
 @RequiredArgsConstructor

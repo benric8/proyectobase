@@ -6,8 +6,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import pe.gob.pj.prueba.domain.model.servicio.Persona;
+import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.domain.port.persistence.GestionPersonaPersistencePort;
-import pe.gob.pj.prueba.domain.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
 import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MaeTipoDocumentoPersona;
@@ -16,7 +16,7 @@ import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MaeTipoDocumentoRe
 import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MovPersonaRepository;
 import pe.gob.pj.prueba.infraestructure.enums.Estado;
 
-@Component("gestionPersonaPersistencePort")
+@Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GestionPersonaPersistenceAdapter implements GestionPersonaPersistencePort {

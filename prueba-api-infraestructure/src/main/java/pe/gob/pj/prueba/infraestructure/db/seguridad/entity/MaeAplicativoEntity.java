@@ -8,7 +8,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -33,8 +32,8 @@ import pe.gob.pj.prueba.infraestructure.enums.OperacionBaseDato;
 @Data
 @Entity
 @Table(name = "mae_aplicativo", schema = SecurityConstants.ESQUEMA_SEGURIDAD)
-@NamedQuery(name = "MaeAplicativo.findAll", query = "SELECT m FROM MaeAplicativoEntity m")
 public class MaeAplicativoEntity implements Serializable {
+
   private static final long serialVersionUID = 1L;
 
   @Id

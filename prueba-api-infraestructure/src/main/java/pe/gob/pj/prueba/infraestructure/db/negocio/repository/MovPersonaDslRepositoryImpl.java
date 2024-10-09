@@ -8,7 +8,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import pe.gob.pj.prueba.domain.model.servicio.Persona;
-import pe.gob.pj.prueba.domain.query.ConsultarPersonaQuery;
+import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.infraestructure.db.negocio.entity.QMaeTipoDocumentoPersona;
 import pe.gob.pj.prueba.infraestructure.db.negocio.entity.QMovPersona;
 
