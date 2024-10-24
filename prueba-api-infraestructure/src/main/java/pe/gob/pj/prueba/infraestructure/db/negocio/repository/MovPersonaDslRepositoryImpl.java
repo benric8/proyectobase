@@ -9,8 +9,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import pe.gob.pj.prueba.domain.model.servicio.Persona;
 import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
-import pe.gob.pj.prueba.infraestructure.db.negocio.entity.QMaeTipoDocumentoPersona;
-import pe.gob.pj.prueba.infraestructure.db.negocio.entity.QMovPersona;
+import pe.gob.pj.prueba.infraestructure.db.negocio.entity.QMaeTipoDocumentoPersonaEntity;
+import pe.gob.pj.prueba.infraestructure.db.negocio.entity.QMovPersonaEntity;
 
 @Repository
 public class MovPersonaDslRepositoryImpl implements MovPersonaDslRepository {
@@ -25,8 +25,8 @@ public class MovPersonaDslRepositoryImpl implements MovPersonaDslRepository {
   @Override
   public List<Persona> buscarPersona(ConsultarPersonaQuery query) {
 
-    var persona = QMovPersona.movPersona;
-    var tipoDocumento = QMaeTipoDocumentoPersona.maeTipoDocumentoPersona;
+    var persona = QMovPersonaEntity.movPersonaEntity;
+    var tipoDocumento = QMaeTipoDocumentoPersonaEntity.maeTipoDocumentoPersonaEntity;
 
     var filtro = new BooleanBuilder();
 

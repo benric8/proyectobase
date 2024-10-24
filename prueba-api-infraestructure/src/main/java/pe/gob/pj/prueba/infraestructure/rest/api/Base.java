@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.rest;
+package pe.gob.pj.prueba.infraestructure.rest.api;
 
 import pe.gob.pj.prueba.domain.exceptions.ErrorException;
 import pe.gob.pj.prueba.infraestructure.utils.UtilInfraestructure;
