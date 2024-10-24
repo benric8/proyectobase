@@ -10,8 +10,8 @@ import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.domain.port.persistence.GestionPersonaPersistencePort;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
-import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MaeTipoDocumentoPersona;
-import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MovPersona;
+import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MaeTipoDocumentoPersonaEntity;
+import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MovPersonaEntity;
 import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MaeTipoDocumentoRepository;
 import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MovPersonaRepository;
 import pe.gob.pj.prueba.infraestructure.enums.Estado;
@@ -33,7 +33,7 @@ public class GestionPersonaPersistenceAdapter implements GestionPersonaPersisten
   public void registrarPersona(String cuo, Persona persona) throws Exception {
     var maeTipoDocumento =
         maeTipoDocumentoRepository.findById(persona.getIdTipoDocumento()).orElseThrow();
-    var movPersona = new MovPersona();
+    var movPersona = new MovPersonaEntity();
     movPersona.setTipoDocumento(maeTipoDocumento);
     movPersona.setNumeroDocumento(persona.getNumeroDocumento());
     movPersona.setPrimerApellido(persona.getPrimerApellido());
@@ -57,7 +57,7 @@ public class GestionPersonaPersistenceAdapter implements GestionPersonaPersisten
     var movPersona2 = movPersonaRepository.findById(persona.getId());
     movPersona2.ifPresent(mov -> {
       if (!mov.getTipoDocumento().getCodigo().equals(persona.getIdTipoDocumento())) {
-        var maeTipoDocumento = new MaeTipoDocumentoPersona();
+        var maeTipoDocumento = new MaeTipoDocumentoPersonaEntity();
         maeTipoDocumento.setCodigo(persona.getIdTipoDocumento());
         mov.setTipoDocumento(maeTipoDocumento);
       }

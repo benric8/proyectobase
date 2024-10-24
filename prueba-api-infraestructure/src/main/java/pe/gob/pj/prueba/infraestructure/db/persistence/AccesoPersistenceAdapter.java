@@ -12,7 +12,7 @@ import pe.gob.pj.prueba.domain.model.servicio.Usuario;
 import pe.gob.pj.prueba.domain.port.persistence.AccesoPersistencePort;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
-import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MaeOpcion;
+import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MaeOpcionEntity;
 import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MaePerfilRepository;
 import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MovUsuarioRepository;
 import pe.gob.pj.prueba.infraestructure.enums.Estado;
@@ -69,7 +69,7 @@ public class AccesoPersistenceAdapter implements AccesoPersistencePort {
       perfilOpciones.setRol(maePerfil.getRol());
       maePerfil.getPerfilsOpcion().forEach(x -> {
         if (x.getActivo().equalsIgnoreCase(Estado.ACTIVO_NUMERICO.getNombre())) {
-          MaeOpcion maeOpcion = x.getOpcion();
+          MaeOpcionEntity maeOpcion = x.getOpcion();
           Opcion opcion = new Opcion();
           opcion.setId(maeOpcion.getId());
           opcion.setCodigo(maeOpcion.getCodigo());

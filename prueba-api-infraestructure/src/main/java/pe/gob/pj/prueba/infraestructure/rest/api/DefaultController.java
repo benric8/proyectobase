@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.rest;
+package pe.gob.pj.prueba.infraestructure.rest.api;
 
 import java.io.Serializable;
 import java.util.Date;

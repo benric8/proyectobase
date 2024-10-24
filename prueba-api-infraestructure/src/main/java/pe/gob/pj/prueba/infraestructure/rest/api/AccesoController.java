@@ -1,6 +1,5 @@
-package pe.gob.pj.prueba.infraestructure.rest;
+package pe.gob.pj.prueba.infraestructure.rest.api;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.enums.Errors;
 import pe.gob.pj.prueba.domain.enums.Proceso;
 import pe.gob.pj.prueba.domain.exceptions.ErrorException;
+import pe.gob.pj.prueba.domain.model.servicio.PerfilUsuario;
 import pe.gob.pj.prueba.domain.port.usecase.AccesoUseCasePort;
 import pe.gob.pj.prueba.domain.utils.CaptchaUtils;
 import pe.gob.pj.prueba.domain.utils.ProjectProperties;
@@ -59,10 +59,9 @@ public class AccesoController implements Acceso {
         if (!request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
             || CaptchaUtils.validCaptcha(request.getTokenCaptcha(), ip, cuo)) {
           var usuario = accesoUC.iniciarSesion(cuo, request.getUsuario(), request.getClave());
-          var rolesUsuario =
-              usuario.getPerfiles().stream().map(perfilDTO -> perfilDTO.getRol()).toList();
+          var rolesUsuario = usuario.getPerfiles().stream().map(PerfilUsuario::getRol).toList();
 
-          var token = getNewToken(jwt, request.getUsuario(), rolesUsuario, ip, cuo, true);
+          var token = getNewToken(jwt, request.getUsuario(), rolesUsuario, ip, cuo);
           if (!ProjectUtils.isNullOrEmpty(token)) {
             usuario.setToken(token);
             res.setData(usuario);
@@ -111,7 +110,7 @@ public class AccesoController implements Acceso {
       var perfilOpciones = accesoUC.obtenerOpciones(cuo, request.getIdPerfil());
 
       var rolesPerfil = Arrays.asList(perfilOpciones.getRol());
-      var token = getNewToken(jwt, request.getUsuario(), rolesPerfil, ip, cuo, true);
+      var token = getNewToken(jwt, request.getUsuario(), rolesPerfil, ip, cuo);
       if (!ProjectUtils.isNullOrEmpty(token)) {
         perfilOpciones.setToken(token);
         res.setData(perfilOpciones);
@@ -138,7 +137,7 @@ public class AccesoController implements Acceso {
   }
 
   private String getNewToken(String token, String usuario, List<String> rolesUsuario,
-      String ipRemota, String cuo, boolean seleccionaRol) {
+      String ipRemota, String cuo) {
     var newToken = "";
     var rolSeleccionado = new StringBuilder();
     try {
@@ -146,20 +145,16 @@ public class AccesoController implements Acceso {
       try {
         Jws<Claims> parsedToken = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(signingKey))
             .build().parseClaimsJws(token);
-        List<String> roles = new ArrayList<>();
 
         @SuppressWarnings("unchecked")
         List<String> rolesToken = (List<String>) parsedToken.getBody().get(Claim.ROLES.getNombre());
-        if (seleccionaRol) {
-          rolSeleccionado.append(rolesUsuario.get(0));
-          if (rolesToken.stream().filter(x -> x.equals(rolSeleccionado.toString())).count() < 1)
-            return newToken;
-          else
-            rolesToken = rolesUsuario;
-        } else {
-          rolSeleccionado.append(parsedToken.getBody().get(Claim.ROL_SELECCIONADO.getNombre()));
-        }
-        roles = rolesToken;
+
+        rolSeleccionado.append(rolesUsuario.get(0));
+        if (rolesToken.stream().filter(x -> x.equals(rolSeleccionado.toString())).count() < 1)
+          return newToken;
+        else
+          rolesToken = rolesUsuario;
+
 
         var ipRemotaToken =
             parsedToken.getBody().get(Claim.IP_REALIZA_PETICION.getNombre()).toString();
@@ -170,15 +165,14 @@ public class AccesoController implements Acceso {
         var tiempoSegundosExpira = ProjectProperties.getSeguridadTiempoExpiraSegundos();
         var tiempoSegundosRefresh = ProjectProperties.getSeguridadTiempoRefreshSegundos();
 
-        if (ipRemota.equals(ipRemotaToken)
-            && (!seleccionaRol || (seleccionaRol && !roles.isEmpty()))) {
+        if (ipRemota.equals(ipRemotaToken) && !rolesToken.isEmpty()) {
           newToken =
               Jwts.builder().signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
                   .setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)
                   .setIssuer(SecurityConstants.TOKEN_ISSUER)
                   .setAudience(SecurityConstants.TOKEN_AUDIENCE).setSubject(subject)
                   .setExpiration(ProjectUtils.sumarRestarSegundos(ahora, tiempoSegundosExpira))
-                  .claim(Claim.ROLES.getNombre(), roles)
+                  .claim(Claim.ROLES.getNombre(), rolesToken)
                   .claim(Claim.ROL_SELECCIONADO.getNombre(), rolSeleccionado.toString())
                   .claim(Claim.USUARIO_REALIZA_PETICION.getNombre(), usuario)
                   .claim(Claim.IP_REALIZA_PETICION.getNombre(), ipRemota)
