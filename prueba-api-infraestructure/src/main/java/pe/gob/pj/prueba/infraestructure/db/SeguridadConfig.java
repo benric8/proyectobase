@@ -22,7 +22,7 @@ import jakarta.persistence.EntityManagerFactory;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "pe.gob.pj.prueba.infraestructure.db.seguridad.repository",
+@EnableJpaRepositories(basePackages = "pe.gob.pj.prueba.infraestructure.db.seguridad.repositories",
     entityManagerFactoryRef = "seguridadEntityManagerFactory",
     transactionManagerRef = "txManagerSeguridad")
 public class SeguridadConfig {
@@ -40,7 +40,7 @@ public class SeguridadConfig {
   LocalContainerEntityManagerFactoryBean seguridadEntityManagerFactory(
       EntityManagerFactoryBuilder builder, @Qualifier("cxSeguridadDS") DataSource dataSource) {
     return builder.dataSource(dataSource)
-        .packages("pe.gob.pj.prueba.infraestructure.db.seguridad.entity")
+        .packages("pe.gob.pj.prueba.infraestructure.db.seguridad.entities")
         .persistenceUnit("seguridad").properties(getHibernateProperties()).build();
   }
 

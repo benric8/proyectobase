@@ -21,7 +21,7 @@ import jakarta.persistence.EntityManagerFactory;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "pe.gob.pj.prueba.infraestructure.db.negocio.repository",
+@EnableJpaRepositories(basePackages = "pe.gob.pj.prueba.infraestructure.db.negocio.repositories",
     entityManagerFactoryRef = "negocioEntityManagerFactory",
     transactionManagerRef = "txManagerNegocio")
 public class NegocioConfig {
@@ -37,7 +37,7 @@ public class NegocioConfig {
   LocalContainerEntityManagerFactoryBean negocioEntityManagerFactory(
       EntityManagerFactoryBuilder builder, @Qualifier("cxNegocioDS") DataSource dataSource) {
     return builder.dataSource(dataSource)
-        .packages("pe.gob.pj.prueba.infraestructure.db.negocio.entity").persistenceUnit("negocio")
+        .packages("pe.gob.pj.prueba.infraestructure.db.negocio.entities").persistenceUnit("negocio")
         .properties(getHibernateProperties()).build();
   }
 

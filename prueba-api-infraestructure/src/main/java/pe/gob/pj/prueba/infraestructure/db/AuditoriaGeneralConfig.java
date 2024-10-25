@@ -20,7 +20,7 @@ import jakarta.persistence.EntityManagerFactory;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    basePackages = "pe.gob.pj.prueba.infraestructure.db.auditoriageneral.repository",
+    basePackages = "pe.gob.pj.prueba.infraestructure.db.auditoriageneral.repositories",
     entityManagerFactoryRef = "auditoriaEntityManagerFactory",
     transactionManagerRef = "txManagerAuditoriaGeneral")
 public class AuditoriaGeneralConfig {
@@ -36,7 +36,7 @@ public class AuditoriaGeneralConfig {
   LocalContainerEntityManagerFactoryBean auditoriaEntityManagerFactory(
       EntityManagerFactoryBuilder builder, @Qualifier("cxAuditoriaGeneralDS") DataSource dataSource) {
     return builder.dataSource(dataSource)
-        .packages("pe.gob.pj.prueba.infraestructure.db.auditoriageneral.entity")
+        .packages("pe.gob.pj.prueba.infraestructure.db.auditoriageneral.entities")
         .persistenceUnit("auditoria").properties(getHibernateProperties()).build();
   }
 

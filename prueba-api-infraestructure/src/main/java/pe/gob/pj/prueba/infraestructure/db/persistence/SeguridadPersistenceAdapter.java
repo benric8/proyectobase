@@ -11,10 +11,10 @@ import pe.gob.pj.prueba.domain.model.seguridad.query.AutenticacionUsuarioQuery;
 import pe.gob.pj.prueba.domain.port.persistence.SeguridadPersistencePort;
 import pe.gob.pj.prueba.domain.utils.EncryptUtils;
 import pe.gob.pj.prueba.domain.utils.ProjectProperties;
-import pe.gob.pj.prueba.infraestructure.db.seguridad.repository.MaeRolRepository;
-import pe.gob.pj.prueba.infraestructure.db.seguridad.repository.MaeRolUsuarioRepository;
-import pe.gob.pj.prueba.infraestructure.db.seguridad.repository.MaeUsuarioRepository;
-import pe.gob.pj.prueba.infraestructure.enums.Estado;
+import pe.gob.pj.prueba.infraestructure.common.enums.Estado;
+import pe.gob.pj.prueba.infraestructure.db.seguridad.repositories.MaeRolRepository;
+import pe.gob.pj.prueba.infraestructure.db.seguridad.repositories.MaeRolUsuarioRepository;
+import pe.gob.pj.prueba.infraestructure.db.seguridad.repositories.MaeUsuarioRepository;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)

@@ -10,11 +10,11 @@ import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.domain.port.persistence.GestionPersonaPersistencePort;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
-import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MaeTipoDocumentoPersonaEntity;
-import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MovPersonaEntity;
-import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MaeTipoDocumentoRepository;
-import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MovPersonaRepository;
-import pe.gob.pj.prueba.infraestructure.enums.Estado;
+import pe.gob.pj.prueba.infraestructure.common.enums.Estado;
+import pe.gob.pj.prueba.infraestructure.db.negocio.entities.MaeTipoDocumentoPersonaEntity;
+import pe.gob.pj.prueba.infraestructure.db.negocio.entities.MovPersonaEntity;
+import pe.gob.pj.prueba.infraestructure.db.negocio.repositories.MaeTipoDocumentoRepository;
+import pe.gob.pj.prueba.infraestructure.db.negocio.repositories.MovPersonaRepository;
 
 @Component
 @RequiredArgsConstructor

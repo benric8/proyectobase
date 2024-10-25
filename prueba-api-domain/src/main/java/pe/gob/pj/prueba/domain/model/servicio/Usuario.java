@@ -12,16 +12,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Usuario implements Serializable {
 
-	/**
-	 * 
-	 */
 	static final long serialVersionUID = 1L;
 	
 	Integer idUsuario;
 	String usuario;
 	String clave;
 	Persona persona = new Persona();
-	List<PerfilUsuario> perfiles = new ArrayList<PerfilUsuario>();
+	List<PerfilUsuario> perfiles = new ArrayList<>();
 	
 	String token;
 	

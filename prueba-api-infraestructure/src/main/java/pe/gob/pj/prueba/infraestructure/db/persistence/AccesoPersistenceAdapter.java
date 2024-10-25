@@ -12,10 +12,10 @@ import pe.gob.pj.prueba.domain.model.servicio.Usuario;
 import pe.gob.pj.prueba.domain.port.persistence.AccesoPersistencePort;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
-import pe.gob.pj.prueba.infraestructure.db.negocio.entity.MaeOpcionEntity;
-import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MaePerfilRepository;
-import pe.gob.pj.prueba.infraestructure.db.negocio.repository.MovUsuarioRepository;
-import pe.gob.pj.prueba.infraestructure.enums.Estado;
+import pe.gob.pj.prueba.infraestructure.common.enums.Estado;
+import pe.gob.pj.prueba.infraestructure.db.negocio.entities.MaeOpcionEntity;
+import pe.gob.pj.prueba.infraestructure.db.negocio.repositories.MaePerfilRepository;
+import pe.gob.pj.prueba.infraestructure.db.negocio.repositories.MovUsuarioRepository;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)

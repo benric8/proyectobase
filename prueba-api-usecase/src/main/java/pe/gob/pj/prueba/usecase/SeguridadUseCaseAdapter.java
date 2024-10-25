@@ -2,7 +2,6 @@ package pe.gob.pj.prueba.usecase;
 
 import java.sql.SQLException;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ import pe.gob.pj.prueba.domain.port.usecase.SeguridadUseCasePort;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SeguridadUseCaseAdapter implements SeguridadUseCasePort {
 
-  @Qualifier("seguridadPersistencePort")
   final SeguridadPersistencePort seguridadPersistencePort;
 
   @Override
