@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 import pe.gob.pj.prueba.domain.model.auditoriageneral.AuditoriaAplicativos;
 import pe.gob.pj.prueba.domain.port.persistence.AuditoriaGeneralPersistencePort;
 import pe.gob.pj.prueba.infraestructure.db.auditoriageneral.entities.MovAuditoriaAplicativosEntity;
-import pe.gob.pj.prueba.infraestructure.mapper.AuditoriaGeneralMapper;
+import pe.gob.pj.prueba.infraestructure.mappers.AuditoriaGeneralMapper;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE)

@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.mapper;
+package pe.gob.pj.prueba.infraestructure.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
