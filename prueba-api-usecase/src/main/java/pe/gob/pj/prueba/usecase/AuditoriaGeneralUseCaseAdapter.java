@@ -2,8 +2,6 @@ package pe.gob.pj.prueba.usecase;
 
 
 import java.sql.SQLException;
-
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -22,7 +20,6 @@ import pe.gob.pj.prueba.domain.port.usecase.AuditoriaGeneralUseCasePort;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuditoriaGeneralUseCaseAdapter implements AuditoriaGeneralUseCasePort {
 
-  @Qualifier("auditoriaGeneralPersistencePort")
   final AuditoriaGeneralPersistencePort auditoriaGeneralPersistencePort;
 
   @Async("poolTask")

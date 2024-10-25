@@ -28,8 +28,9 @@ public enum Errors {
 	ERROR_AUDITORIA_GENERAL_REGISTRAR("E015", " Error al %s - No se pudo guardar trazabilidad en la auditoría general."),
 	
 	NEGOCIO_CREDENCIALES_INCORRECTAS("N001"," Error al %s - Las credenciales son incorrectas o el usuario esta inactivo."),
-	NEGOCIO_PERFIL_NO_ENCONTRADO("N002"," Error al %s - No se encontro el perfil indicado y/o no tiene opciones asignadas."),
-	NEGOCIO_PERSONA_YA_REGISTRADA("N003"," Error al %s - La persona ingresada ya esta registrada.");
+    NEGOCIO_PERFIL_NO_ASIGNADO("N002"," Error al %s - El usuario no tiene pefil asignado."),
+	NEGOCIO_OPCIONES_NOASIGNADAS("N003"," Error al %s - El perfil de usuario no tiene opciones de menú asignadas."),
+	NEGOCIO_PERSONA_YA_REGISTRADA("N004"," Error al %s - La persona ingresada ya esta registrada.");
 	
 	String codigo;
 	String nombre;

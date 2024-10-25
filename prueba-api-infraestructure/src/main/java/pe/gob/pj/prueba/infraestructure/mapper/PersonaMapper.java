@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import pe.gob.pj.prueba.domain.model.servicio.Persona;
-import pe.gob.pj.prueba.infraestructure.rest.request.PersonaRequest;
+import pe.gob.pj.prueba.infraestructure.rest.requests.PersonaRequest;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PersonaMapper {

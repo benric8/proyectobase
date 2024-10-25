@@ -19,7 +19,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import lombok.RequiredArgsConstructor;
 import pe.gob.pj.prueba.domain.port.usecase.SeguridadUseCasePort;
-import pe.gob.pj.prueba.infraestructure.security.adapter.UserDetailsServiceAdapter;
+import pe.gob.pj.prueba.infraestructure.security.adapters.UserDetailsServiceAdapter;
+import pe.gob.pj.prueba.infraestructure.security.filters.JwtAuthenticationFilter;
+import pe.gob.pj.prueba.infraestructure.security.filters.JwtAuthorizationFilter;
 
 
 @Configuration
