@@ -19,6 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import lombok.RequiredArgsConstructor;
 import pe.gob.pj.prueba.domain.port.usecase.SeguridadUseCasePort;
+import pe.gob.pj.prueba.domain.utils.ProjectProperties;
 import pe.gob.pj.prueba.infraestructure.security.adapters.UserDetailsServiceAdapter;
 import pe.gob.pj.prueba.infraestructure.security.filters.JwtAuthenticationFilter;
 import pe.gob.pj.prueba.infraestructure.security.filters.JwtAuthorizationFilter;
@@ -35,7 +36,8 @@ public class SecurityConfig {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("*"));
+    configuration.setAllowedOrigins(
+        Arrays.asList(ProjectProperties.getSeguridadDominiosPermitidos().split("|")));
     configuration.setAllowedMethods(Arrays.asList("*"));
     configuration.setAllowedHeaders(Arrays.asList("*"));
     final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -49,11 +51,8 @@ public class SecurityConfig {
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(authz -> authz
-            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
-            .permitAll()
-            .requestMatchers("/healthcheck")
-            .permitAll()
-            .anyRequest().authenticated())
+            .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+            .requestMatchers("/healthcheck").permitAll().anyRequest().authenticated())
         .addFilter(new JwtAuthenticationFilter(authenticationManager(), seguridadService))
         .addFilter(new JwtAuthorizationFilter(authenticationManager(), seguridadService))
         .sessionManagement(

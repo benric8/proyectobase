@@ -16,7 +16,7 @@ public interface GestionPersonaPersistencePort {
 	 * @return Lista del modelo Persona que coinciden con los filtros enviados
 	 * @throws Exception
 	 */
-	public List<Persona> buscarPersona(String cuo, ConsultarPersonaQuery filters) throws Exception;
+	public List<Persona> buscarPersona(String cuo, ConsultarPersonaQuery filters);
 
 	/**
 	 * 
@@ -26,7 +26,7 @@ public interface GestionPersonaPersistencePort {
 	 * @param persona Modelo que contiene los atributos de una persona que se quieren guardar
 	 * @throws Exception
 	 */
-	public void registrarPersona(String cuo, Persona persona) throws Exception;
+	public void registrarPersona(String cuo, Persona persona);
 
 	/**
 	 * 
@@ -36,6 +36,6 @@ public interface GestionPersonaPersistencePort {
 	 * @param persona Modelo que contiene los atributos de una persona que se quieren guardar incluyendo el identificador
 	 * @throws Exception
 	 */
-	public void actualizarPersona(String cuo, Persona persona) throws Exception;
+	public void actualizarPersona(String cuo, Persona persona);
 
 }

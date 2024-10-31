@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,6 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import pe.gob.pj.prueba.domain.exceptions.TokenException;
 import pe.gob.pj.prueba.domain.port.usecase.SeguridadUseCasePort;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectProperties;
@@ -67,9 +70,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
     if (authentication == null) {
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      filterChain.doFilter(request, response);
-      return;
+      throw new TokenException();
     }
     SecurityContextHolder.getContext().setAuthentication(authentication);
     filterChain.doFilter(request, response);
@@ -96,36 +97,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   }
 
   private String obtenerIps(HttpServletRequest request) {
-    StringBuilder ips = new StringBuilder();
-    ips.append(request.getRemoteAddr());
-    ips.append(Objects.nonNull(request.getRemoteHost())
-        && !ips.toString().contains(request.getRemoteHost()) ? "|" + request.getRemoteHost()
-            : ProjectConstants.Caracter.VACIO);
-    ips.append(Objects.nonNull(request.getHeader("X-Forwarded-For"))
-        && !ips.toString().contains(request.getHeader("X-Forwarded-For"))
-            ? "|" + request.getHeader("X-Forwarded-For")
-            : ProjectConstants.Caracter.VACIO);
-    ips.append(Objects.nonNull(request.getHeader("X-Real-IP"))
-        && !ips.toString().contains(request.getHeader("X-Real-IP"))
-            ? "|" + request.getHeader("X-Real-IP")
-            : ProjectConstants.Caracter.VACIO);
-    ips.append(Objects.nonNull(request.getHeader("Proxy-Client-IP"))
-        && !ips.toString().contains(request.getHeader("Proxy-Client-IP"))
-            ? "|" + request.getHeader("Proxy-Client-IP")
-            : ProjectConstants.Caracter.VACIO);
-    ips.append(Objects.nonNull(request.getHeader("WL-Proxy-Client-IP"))
-        && !ips.toString().contains(request.getHeader("WL-Proxy-Client-IP"))
-            ? "|" + request.getHeader("WL-Proxy-Client-IP")
-            : ProjectConstants.Caracter.VACIO);
-    ips.append(Objects.nonNull(request.getHeader("HTTP_CLIENT_IP"))
-        && !ips.toString().contains(request.getHeader("HTTP_CLIENT_IP"))
-            ? "|" + request.getHeader("HTTP_CLIENT_IP")
-            : ProjectConstants.Caracter.VACIO);
-    ips.append(Objects.nonNull(request.getHeader("HTTP_X_FORWARDED_FOR"))
-        && !ips.toString().contains(request.getHeader("HTTP_X_FORWARDED_FOR"))
-            ? "|" + request.getHeader("HTTP_X_FORWARDED_FOR")
-            : ProjectConstants.Caracter.VACIO);
-    return ips.toString();
+    String remoteIp = request.getRemoteAddr();
+    var headers = Arrays.asList("X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP",
+        "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR");
+    return Stream
+        .concat(Stream.of(remoteIp), headers.stream().map(request::getHeader)
+            .filter(Objects::nonNull).distinct().filter(ip -> !ip.equals(remoteIp)))
+        .collect(Collectors.joining("|"));
   }
 
   /**
@@ -172,13 +150,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         Date limiteExpira = parsedToken.getBody().getExpiration();
         Date limiteRefresh = ProjectUtils.sumarRestarSegundos(limiteExpira, tiempoSegundosRefresh);
 
-        if (!urlReq.endsWith("refresh")) {
-          if (ProjectUtils.isNullOrEmpty(
-              seguridadService.validarAccesoMetodo(cuo, username, rolSeleccionado, urlReq))) {
-            log.warn("{} El usuario [{}] con rol [{}], no tiene acceso al método [{}] ", cuo,
-                username, rolSeleccionado, urlReq);
-            return null;
-          }
+        if (!urlReq.endsWith("refresh") && ProjectUtils.isNullOrEmpty(
+            seguridadService.validarAccesoMetodo(cuo, username, rolSeleccionado, urlReq))) {
+          log.warn("{} El usuario [{}] con rol [{}], no tiene acceso al método [{}] ", cuo,
+              username, rolSeleccionado, urlReq);
+          return null;
         }
 
         if (!remoteIp.equals(ipRemotaDeToken)) {
@@ -210,11 +186,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
           return new UsernamePasswordAuthenticationToken(subject, null, authorities);
         }
         log.warn("{} Request to parse expired JWT : {} failed : {}", cuo, exception.getMessage());
-      } catch (Exception e) {
-        log.error("{} Ocurrio el siguiente error {} ", cuo,
-            ProjectUtils.convertExceptionToString(e));
-        e.printStackTrace();
-      }
+      } 
     }
     return null;
   }

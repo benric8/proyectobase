@@ -5,12 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import pe.gob.pj.prueba.domain.enums.Proceso;
-import pe.gob.pj.prueba.domain.exceptions.ErrorException;
+import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.domain.port.usecase.AuditoriaGeneralUseCasePort;
 import pe.gob.pj.prueba.domain.port.usecase.GestionPersonaUseCasePort;
@@ -25,6 +25,7 @@ import pe.gob.pj.prueba.infraestructure.rest.responses.PersonaResponse;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Slf4j
 public class GestionPersonaController implements GestionPersona {
 
   @SuppressWarnings("unused")
@@ -41,16 +42,9 @@ public class GestionPersonaController implements GestionPersona {
     var res = new ConsultaPersonaResponse();
     res.setCodigoOperacion(cuo);
 
-    try {
-      res.setData(gestionPersonaUseCasePort.buscarPersona(cuo,
-          ConsultarPersonaQuery.builder().documentoIdentidad(numeroDocumento).build()));
-    } catch (ErrorException e) {
-      handleException(cuo, e);
-    } catch (Exception e) {
-      res.errorInesperado(Proceso.PERSONA_CONSULTAR.getNombre());
-      handleException(cuo,
-          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
-    }
+    res.setData(gestionPersonaUseCasePort.buscarPersona(cuo,
+        ConsultarPersonaQuery.builder().documentoIdentidad(numeroDocumento).build()));
+
     var headers = new HttpHeaders();
     headers.setContentType(
         MediaType.parseMediaType(FormatoRespuesta.XML.getNombre().equalsIgnoreCase(formatoRespuesta)
@@ -64,12 +58,14 @@ public class GestionPersonaController implements GestionPersona {
       String uri, String params, String herramienta, String ip, PersonaRequest request) {
     var res = new PersonaResponse();
     res.setCodigoOperacion(cuo);
+
+    var inicio = System.currentTimeMillis();
+    var personaDto = personaMapper.toPersona(request);
+    gestionPersonaUseCasePort.registrarPersona(cuo, personaDto);
+    res.setData(personaDto);
+    var fin = System.currentTimeMillis();
+
     try {
-      var inicio = System.currentTimeMillis();
-      var personaDto = personaMapper.toPersona(request);
-      gestionPersonaUseCasePort.registrarPersona(cuo, personaDto);
-      res.setData(personaDto);
-      var fin = System.currentTimeMillis();
       var auditoriaAplicativos =
           auditoriaGeneralMapper.toAuditoriaAplicativos(request.getAuditoria(), cuo, ips, usuauth,
               uri, params, herramienta, res.getCodigo(), res.getDescripcion(), fin - inicio);
@@ -77,13 +73,10 @@ public class GestionPersonaController implements GestionPersona {
       var jsonString = objectMapper.writeValueAsString(request);
       auditoriaAplicativos.setPeticionBody(jsonString);
       auditoriaGeneralUseCasePort.crear(cuo, auditoriaAplicativos);
-    } catch (ErrorException e) {
-      handleException(cuo, e);
-    } catch (Exception e) {
-      res.errorInesperado(Proceso.PERSONA_REGISTRAR.getNombre());
-      handleException(cuo,
-          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
+    } catch (JsonProcessingException e) {
+      log.error("{} JsonProcessingException {} ", cuo, e);
     }
+
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.parseMediaType(
         FormatoRespuesta.XML.getNombre().equalsIgnoreCase(request.getFormatoRespuesta())
@@ -98,20 +91,12 @@ public class GestionPersonaController implements GestionPersona {
       PersonaRequest request) {
     var res = new PersonaResponse();
     res.setCodigoOperacion(cuo);
-    try {
-      var personaDto = personaMapper.toPersona(request);
-      personaDto.setId(id);
-      gestionPersonaUseCasePort.actualizarPersona(cuo, personaDto);
-      res.setData(personaDto);
-    } catch (ErrorException e) {
-      res.setCodigo(e.getCodigo());
-      res.setDescripcion(e.getDescripcion());
-      handleException(cuo, e);
-    } catch (Exception e) {
-      res.errorInesperado(Proceso.PERSONA_ACTUALIZAR.getNombre());
-      handleException(cuo,
-          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
-    }
+
+    var personaDto = personaMapper.toPersona(request);
+    personaDto.setId(id);
+    gestionPersonaUseCasePort.actualizarPersona(cuo, personaDto);
+    res.setData(personaDto);
+
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.parseMediaType(
         FormatoRespuesta.XML.getNombre().equalsIgnoreCase(request.getFormatoRespuesta())

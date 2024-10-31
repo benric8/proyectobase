@@ -1,12 +1,11 @@
 package pe.gob.pj.prueba.infraestructure.rest.responses;
 
 import java.io.Serializable;
-
 import lombok.Data;
-import pe.gob.pj.prueba.domain.enums.Errors;
+import pe.gob.pj.prueba.infraestructure.common.enums.TipoError;
 
 @Data
-abstract class GlobalResponse implements Serializable {
+public class GlobalResponse implements Serializable {
   /**
   * 
   */
@@ -16,14 +15,9 @@ abstract class GlobalResponse implements Serializable {
   private String descripcion;
   private String codigoOperacion;
 
-  GlobalResponse() {
-    this.codigo = Errors.OPERACION_EXITOSA.getCodigo();
-    this.descripcion = Errors.OPERACION_EXITOSA.getNombre();
-  }
-  
-  public void errorInesperado(String proceso) {
-    this.codigo = Errors.ERROR_INESPERADO.getCodigo();
-    this.descripcion = String.format(Errors.ERROR_INESPERADO.getNombre(), proceso);
+  public GlobalResponse() {
+    this.codigo = TipoError.OPERACION_EXITOSA.getCodigo();
+    this.descripcion = TipoError.OPERACION_EXITOSA.getDescripcion();
   }
 
 }

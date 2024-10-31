@@ -24,29 +24,28 @@ public class SeguridadUseCaseAdapter implements SeguridadUseCasePort {
   @Override
   @Transactional(transactionManager = "txManagerSeguridad", propagation = Propagation.REQUIRED,
       readOnly = true, rollbackFor = {Exception.class, SQLException.class})
-  public String autenticarUsuario(String cuo, AutenticacionUsuarioQuery query) throws Exception {
+  public String autenticarUsuario(String cuo, AutenticacionUsuarioQuery query) {
     return seguridadPersistencePort.autenticarUsuario(cuo, query);
   }
 
   @Override
   @Transactional(transactionManager = "txManagerSeguridad", propagation = Propagation.REQUIRED,
       readOnly = true, rollbackFor = {Exception.class, SQLException.class})
-  public Usuario recuperaInfoUsuario(String cuo, String id) throws Exception {
+  public Usuario recuperaInfoUsuario(String cuo, String id) {
     return seguridadPersistencePort.recuperaInfoUsuario(cuo, id);
   }
 
   @Override
   @Transactional(transactionManager = "txManagerSeguridad", propagation = Propagation.REQUIRED,
       readOnly = true, rollbackFor = {Exception.class, SQLException.class})
-  public List<Rol> recuperarRoles(String cuo, String id) throws Exception {
+  public List<Rol> recuperarRoles(String cuo, String id) {
     return seguridadPersistencePort.recuperarRoles(cuo, id);
   }
 
   @Override
   @Transactional(transactionManager = "txManagerSeguridad", propagation = Propagation.REQUIRED,
       readOnly = true, rollbackFor = {Exception.class, SQLException.class})
-  public String validarAccesoMetodo(String cuo, String usuario, String rol, String operacion)
-      throws Exception {
+  public String validarAccesoMetodo(String cuo, String usuario, String rol, String operacion) {
     return seguridadPersistencePort.validarAccesoMetodo(cuo, usuario, rol, operacion);
   }
 

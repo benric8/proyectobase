@@ -14,7 +14,7 @@ public interface AccesoPersistencePort {
 	 * @return Modelo Usuario o null
 	 * @throws Exception
 	 */
-	public Usuario iniciarSesion(String cuo, String usuario) throws Exception;
+	public Usuario iniciarSesion(String cuo, String usuario);
 	
 	/**
 	 * 
@@ -26,5 +26,5 @@ public interface AccesoPersistencePort {
 	 * @return Modelo PerfilOpcions o null
 	 * @throws Exception
 	 */
-	public PerfilOpcions obtenerOpciones(String cuo, Integer idPerfil) throws Exception;
+	public PerfilOpcions obtenerOpciones(String cuo, Integer idPerfil);
 }

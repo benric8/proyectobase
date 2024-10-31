@@ -1,6 +1,7 @@
 package pe.gob.pj.prueba.infraestructure.db.auditoriageneral.entities;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -74,9 +75,8 @@ public class MovAuditoriaAplicativosEntity implements Serializable{
 	String herramientaConsume;
     
     //Auditoria
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="F_AUD")
-    private Date fAud = new Date();
+    LocalDateTime fAud = LocalDateTime.now();
     @Column(name="B_AUD")
     private String bAud = OperacionBaseDato.INSERTAR.getNombre();
     @Column(name="C_AUD_UID")

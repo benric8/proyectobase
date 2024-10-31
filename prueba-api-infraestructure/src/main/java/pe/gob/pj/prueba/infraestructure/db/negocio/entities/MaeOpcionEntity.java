@@ -1,8 +1,8 @@
 package pe.gob.pj.prueba.infraestructure.db.negocio.entities;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -16,8 +16,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -61,9 +59,8 @@ public class MaeOpcionEntity implements Serializable {
   List<MovOpcionPerfilEntity> perfils = new ArrayList<>();
 
   // Auditoria
-  @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "F_AUD")
-  Date fAud = new Date();
+  LocalDateTime fAud = LocalDateTime.now();
   @Column(name = "B_AUD")
   String bAud = OperacionBaseDato.INSERTAR.getNombre();
   @Column(name = "C_AUD_UID")

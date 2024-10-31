@@ -25,12 +25,12 @@ public class GestionPersonaPersistenceAdapter implements GestionPersonaPersisten
   final MaeTipoDocumentoRepository maeTipoDocumentoRepository;
 
   @Override
-  public List<Persona> buscarPersona(String cuo, ConsultarPersonaQuery filters) throws Exception {
-     return movPersonaRepository.buscarPersona(filters);
+  public List<Persona> buscarPersona(String cuo, ConsultarPersonaQuery filters) {
+    return movPersonaRepository.buscarPersona(filters);
   }
 
   @Override
-  public void registrarPersona(String cuo, Persona persona) throws Exception {
+  public void registrarPersona(String cuo, Persona persona) {
     var maeTipoDocumento =
         maeTipoDocumentoRepository.findById(persona.getIdTipoDocumento()).orElseThrow();
     var movPersona = new MovPersonaEntity();
@@ -52,7 +52,7 @@ public class GestionPersonaPersistenceAdapter implements GestionPersonaPersisten
   }
 
   @Override
-  public void actualizarPersona(String cuo, Persona persona) throws Exception {
+  public void actualizarPersona(String cuo, Persona persona) {
 
     var movPersona2 = movPersonaRepository.findById(persona.getId());
     movPersona2.ifPresent(mov -> {

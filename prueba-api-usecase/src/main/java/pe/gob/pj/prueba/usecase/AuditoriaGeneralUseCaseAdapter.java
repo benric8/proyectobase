@@ -9,8 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import pe.gob.pj.prueba.domain.enums.Errors;
-import pe.gob.pj.prueba.domain.exceptions.ErrorException;
+import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.model.auditoriageneral.AuditoriaAplicativos;
 import pe.gob.pj.prueba.domain.port.persistence.AuditoriaGeneralPersistencePort;
 import pe.gob.pj.prueba.domain.port.usecase.AuditoriaGeneralUseCasePort;
@@ -18,6 +17,7 @@ import pe.gob.pj.prueba.domain.port.usecase.AuditoriaGeneralUseCasePort;
 @Service("auditoriaGeneralUseCasePort")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Slf4j
 public class AuditoriaGeneralUseCaseAdapter implements AuditoriaGeneralUseCasePort {
 
   final AuditoriaGeneralPersistencePort auditoriaGeneralPersistencePort;
@@ -27,12 +27,13 @@ public class AuditoriaGeneralUseCaseAdapter implements AuditoriaGeneralUseCasePo
   @Transactional(transactionManager = "txManagerAuditoriaGeneral",
       propagation = Propagation.REQUIRED, readOnly = false,
       rollbackFor = {Exception.class, SQLException.class})
-  public void crear(String cuo, AuditoriaAplicativos auditoriaAplicativos) throws Exception {
+  public void crear(String cuo, AuditoriaAplicativos auditoriaAplicativos) {
     try {
       this.auditoriaGeneralPersistencePort.crear(auditoriaAplicativos);
     } catch (Exception e) {
-      throw new ErrorException(Errors.ERROR_AUDITORIA_GENERAL_REGISTRAR.getCodigo(),
-          Errors.ERROR_AUDITORIA_GENERAL_REGISTRAR.getNombre(), e);
+      log.error(
+          "{} No se pudo guardar la trazabilidad {} en auditoria_general debido al error [{}] ",
+          cuo, auditoriaAplicativos.toString(), e);
     }
   }
 

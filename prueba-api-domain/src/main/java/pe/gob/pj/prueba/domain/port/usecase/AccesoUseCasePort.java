@@ -17,7 +17,7 @@ public interface AccesoUseCasePort {
 	 * @return Usuario
 	 * @throws Exception
 	 */
-	public Usuario iniciarSesion(String cuo, String usuario, String clave) throws Exception;
+	public Usuario iniciarSesion(String cuo, String usuario, String clave);
 	
 	/**
 	 * 
@@ -29,5 +29,5 @@ public interface AccesoUseCasePort {
 	 * @return Retorna las opciones asignadas al perfil
 	 * @throws Exception
 	 */
-	public PerfilOpcions obtenerOpciones(String cuo, Integer idPerfil) throws Exception;
+	public PerfilOpcions obtenerOpciones(String cuo, Integer idPerfil);
 }

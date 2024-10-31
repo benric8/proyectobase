@@ -26,7 +26,7 @@ public class AccesoPersistenceAdapter implements AccesoPersistencePort {
   final MaePerfilRepository maePerfilRepository;
 
   @Override
-  public Usuario iniciarSesion(String cuo, String usuario) throws Exception {
+  public Usuario iniciarSesion(String cuo, String usuario){
     Usuario usuarioDTO = new Usuario();
     movUsuarioRepository.findByActivoAndUsuario(Estado.ACTIVO_NUMERICO.getNombre(), usuario)
         .ifPresent(movUsuario -> {
@@ -63,7 +63,7 @@ public class AccesoPersistenceAdapter implements AccesoPersistencePort {
   }
 
   @Override
-  public PerfilOpcions obtenerOpciones(String cuo, Integer idPerfil) throws Exception {
+  public PerfilOpcions obtenerOpciones(String cuo, Integer idPerfil){
     PerfilOpcions perfilOpciones = new PerfilOpcions();
     maePerfilRepository.findById(idPerfil).ifPresent(maePerfil -> {
       perfilOpciones.setRol(maePerfil.getRol());

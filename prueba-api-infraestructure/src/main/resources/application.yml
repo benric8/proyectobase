@@ -3,9 +3,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        transaction.coordinator_class: jta
-        jta.platform: org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform
+        "[transaction.coordinator_class]": jta
+        "[jta.platform]": org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform
     open-in-view: false
+
 
 springdoc:
   api-docs:
@@ -17,7 +18,10 @@ springdoc:
     url: /v3/api-docs
   paths-to-match: /**
 
+
 logging:
   level:
-    org.springframework.web: '[DEBUG]'
-    org.springdoc: DEBUG
+    "[org.springframework.web]": DEBUG
+    "[org.springdoc]": DEBUG
+    "[org.springframework.security]": DEBUG
+    "[org.springframework.data]": DEBUG

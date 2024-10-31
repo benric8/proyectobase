@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import pe.gob.pj.prueba.domain.exceptions.TokenException;
 import pe.gob.pj.prueba.domain.model.seguridad.query.AutenticacionUsuarioQuery;
 import pe.gob.pj.prueba.domain.port.usecase.SeguridadUseCasePort;
 import pe.gob.pj.prueba.domain.utils.EncryptUtils;
@@ -61,25 +62,30 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     var password = request.getHeader(SecurityConstants.HEAD_PASSWORD);
     var codigoCliente = request.getHeader(SecurityConstants.HEAD_COD_CLIENTE);
     var codigoRol = request.getHeader(SecurityConstants.HEAD_COD_ROL);
-    String idUsuario = null;
+
     try {
       username = EncryptUtils.decryptPastFrass(username);
       password = EncryptUtils.decryptPastFrass(password);
-      idUsuario = seguridadService.autenticarUsuario(cuo,
-          AutenticacionUsuarioQuery.builder().usuario(username).clave(password)
-              .codigoCliente(codigoCliente).codigoRol(codigoRol).build());
     } catch (Exception e) {
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      log.error("{} ERROR AUTENTIFICANDO USUARIO CON BASE DE DATOS DE SEGURIDAD : {}", cuo,
-          ProjectUtils.convertExceptionToString(e));
-      return null;
+      log.error(
+          "{} Ocurrió un error en la desencriptación de los parámetros de consumo del servicio, error [{}].",
+          cuo, e);
+      throw new TokenException();
     }
-    if (Objects.nonNull(idUsuario) && !idUsuario.isEmpty()) {
-      return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(idUsuario,
-          EncryptUtils.encrypt(username, password)));
+
+    var idUsuario = seguridadService.autenticarUsuario(cuo,
+        AutenticacionUsuarioQuery.builder().usuario(username).clave(password)
+            .codigoCliente(codigoCliente).codigoRol(codigoRol).build());
+
+    if (Objects.isNull(idUsuario) || idUsuario.isEmpty()) {
+      log.error(
+          "{} Ocurrió un error en la autenticación de los parámetros de consumo del servicio.",
+          cuo);
+      throw new TokenException();
     }
-    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    return null;
+
+    return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(idUsuario,
+        EncryptUtils.encrypt(username, password)));
   }
 
   /**

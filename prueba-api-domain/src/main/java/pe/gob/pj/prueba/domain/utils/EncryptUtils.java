@@ -158,40 +158,44 @@ public class EncryptUtils {
     return Base64.getDecoder().decode(property);
   }
 
-  public static String cryptBase64u(String input, int mode) throws Exception {
+  public static String cryptBase64u(String input, int mode){
     Base64u base64u = new Base64u();
     base64u.setLineLength(72);
+    
+    try {
+      KeyGenerator kgen = KeyGenerator.getInstance("Blowfish");
+      kgen.init(448);
+      byte[] raw = defaultKey.getBytes("UTF-8");
+      SecretKeySpec skeySpec = new SecretKeySpec(raw, "Blowfish");
 
-    KeyGenerator kgen = KeyGenerator.getInstance("Blowfish");
-    kgen.init(448);
-    byte[] raw = defaultKey.getBytes("UTF-8");
-    SecretKeySpec skeySpec = new SecretKeySpec(raw, "Blowfish");
+      Cipher cipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
+      cipher.init(mode, skeySpec);
+      
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      ByteArrayInputStream bis;
+      if (Cipher.ENCRYPT_MODE == mode) {
+        bis = new ByteArrayInputStream(input.getBytes());
+      } else {
+        bis = new ByteArrayInputStream(base64u.decode(input));
+      }
+      CipherOutputStream cos = new CipherOutputStream(bos, cipher);
 
-    Cipher cipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
-    cipher.init(mode, skeySpec);
+      int length;
+      byte[] buffer = new byte[8192];
+      while ((length = bis.read(buffer)) != -1) {
+        cos.write(buffer, 0, length);
+      }
 
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    ByteArrayInputStream bis;
-    if (Cipher.ENCRYPT_MODE == mode) {
-      bis = new ByteArrayInputStream(input.getBytes());
-    } else {
-      bis = new ByteArrayInputStream(base64u.decode(input));
-    }
-    CipherOutputStream cos = new CipherOutputStream(bos, cipher);
-
-    int length;
-    byte[] buffer = new byte[8192];
-    while ((length = bis.read(buffer)) != -1) {
-      cos.write(buffer, 0, length);
-    }
-
-    bis.close();
-    cos.close();
-
-    if (Cipher.ENCRYPT_MODE == mode) {
-      return base64u.encode(bos.toByteArray());
-    } else {
-      return bos.toString();
+      bis.close();
+      cos.close();
+      
+      if (Cipher.ENCRYPT_MODE == mode) {
+        return base64u.encode(bos.toByteArray());
+      } else {
+        return bos.toString();
+      }
+    } catch (Exception e) {
+      return null;
     }
   }
 }

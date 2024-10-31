@@ -16,7 +16,7 @@ import pe.gob.pj.prueba.infraestructure.mappers.AuditoriaGeneralMapper;
 @RequiredArgsConstructor
 public class AuditoriaGeneralPersistenceAdapter implements AuditoriaGeneralPersistencePort {
 
-  AuditoriaGeneralMapper auditoriaGeneralMapper;
+  final AuditoriaGeneralMapper auditoriaGeneralMapper;
   @PersistenceContext(unitName = "auditoria")
   EntityManager entityManager;
 

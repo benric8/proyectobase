@@ -8,8 +8,8 @@ import pe.gob.pj.prueba.domain.model.seguridad.query.AutenticacionUsuarioQuery;
 
 
 public interface SeguridadUseCasePort{
-	public String autenticarUsuario(String cuo, AutenticacionUsuarioQuery query) throws Exception;
-	public Usuario recuperaInfoUsuario(String cuo, String id) throws Exception;
-	public List<Rol> recuperarRoles(String cuo, String id) throws Exception;
-	public String validarAccesoMetodo(String cuo, String usuario, String rol, String operacion) throws Exception;
+	public String autenticarUsuario(String cuo, AutenticacionUsuarioQuery query);
+	public Usuario recuperaInfoUsuario(String cuo, String id);
+	public List<Rol> recuperarRoles(String cuo, String id);
+	public String validarAccesoMetodo(String cuo, String usuario, String rol, String operacion);
 }

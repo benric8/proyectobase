@@ -1,7 +1,6 @@
 package pe.gob.pj.prueba.domain.model.auditoriageneral;
 
-import java.util.Date;
-
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +14,7 @@ public class AuditoriaAplicativos extends Auditoria{
 	
 	Long id;
 
-	Date fechaRegistro;
+	LocalDateTime fechaRegistro;
 
 	String uri;
 	

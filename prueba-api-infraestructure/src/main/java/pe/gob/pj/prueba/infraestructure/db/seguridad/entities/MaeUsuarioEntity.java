@@ -2,7 +2,7 @@ package pe.gob.pj.prueba.infraestructure.db.seguridad.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,12 +11,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
 import pe.gob.pj.prueba.domain.utils.SecurityConstants;
 import pe.gob.pj.prueba.infraestructure.common.enums.Estado;
@@ -29,53 +28,52 @@ import pe.gob.pj.prueba.infraestructure.common.enums.OperacionBaseDato;
  */
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Entity
 @Table(name = "mae_usuario", schema = SecurityConstants.ESQUEMA_SEGURIDAD)
 public class MaeUsuarioEntity implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+  static final long serialVersionUID = 1L;
 
   @Id
   @Column(name = "n_usuario")
-  private Integer nusuario;
+  Integer nusuario;
 
   @Column(name = "c_clave")
-  private String cClave;
+  String cClave;
 
   @Column(name = "c_usuario")
-  private String cUsuario;
+  String cUsuario;
 
   @Column(name = "f_registro")
-  private Timestamp fRegistro;
+  Timestamp fRegistro;
 
   // bi-directional many-to-one association to MaeRolUsuario
   @OneToMany(mappedBy = "maeUsuario")
-  private List<MaeRolUsuarioEntity> maeRolUsuarios;
+  List<MaeRolUsuarioEntity> maeRolUsuarios;
 
   // bi-directional many-to-one association to MaeCliente
   @ManyToOne
   @JoinColumn(name = "n_cliente")
-  private MaeClienteEntity maeCliente;
+  MaeClienteEntity maeCliente;
 
   // Auditoria
-  @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "F_AUD")
-  private Date fAud = new Date();
+  LocalDateTime fAud = LocalDateTime.now();
   @Column(name = "B_AUD")
-  private String bAud = OperacionBaseDato.INSERTAR.getNombre();
+  String bAud = OperacionBaseDato.INSERTAR.getNombre();
   @Column(name = "C_AUD_UID")
-  private String cAudId;
+  String cAudId;
   @Column(name = "C_AUD_UIDRED")
-  private String cAudIdRed = ProjectUtils.getNombreRed();
+  String cAudIdRed = ProjectUtils.getNombreRed();
   @Column(name = "C_AUD_PC")
-  private String cAudPc = ProjectUtils.getPc();
+  String cAudPc = ProjectUtils.getPc();
   @Column(name = "C_AUD_IP")
-  private String cAudIp = ProjectUtils.getIp();
+  String cAudIp = ProjectUtils.getIp();
   @Column(name = "C_AUD_MCADDR")
-  private String cAudMcAddr = ProjectUtils.getMac();
+  String cAudMcAddr = ProjectUtils.getMac();
   @Column(name = "L_ACTIVO", length = 1, nullable = false)
-  private String activo = Estado.ACTIVO_NUMERICO.getNombre();
+  String activo = Estado.ACTIVO_NUMERICO.getNombre();
 
 }

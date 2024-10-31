@@ -23,7 +23,7 @@ import pe.gob.pj.prueba.infraestructure.rest.responses.UsuarioResponse;
 @RestController
 @RequestMapping(value = "authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Acceso", description = "API para autenticación y gestión de accesos")
-public interface Acceso extends Base {
+public interface Acceso {
 
   @PostMapping(value = "login")
   @Operation(summary = "Iniciar sesión", operationId = "iniciarSesion",

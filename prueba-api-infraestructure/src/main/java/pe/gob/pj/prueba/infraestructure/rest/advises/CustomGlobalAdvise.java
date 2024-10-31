@@ -24,8 +24,18 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import pe.gob.pj.prueba.domain.exceptions.CaptchaException;
+import pe.gob.pj.prueba.domain.exceptions.CredencialesSinCoincidenciaException;
+import pe.gob.pj.prueba.domain.exceptions.DatosNoEncontradosException;
+import pe.gob.pj.prueba.domain.exceptions.OpcionesNoAsignadadException;
+import pe.gob.pj.prueba.domain.exceptions.PersonaYaExisteException;
+import pe.gob.pj.prueba.domain.exceptions.TokenException;
+import pe.gob.pj.prueba.domain.exceptions.UsuarioSinPerfilAsignadoException;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
+import pe.gob.pj.prueba.infraestructure.common.enums.TipoError;
+import pe.gob.pj.prueba.infraestructure.common.utils.UtilInfraestructure;
+import pe.gob.pj.prueba.infraestructure.rest.responses.GlobalResponse;
 
 @Slf4j
 @ControllerAdvice
@@ -170,19 +180,93 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler({Exception.class})
-  public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
-    String cuo = String
-        .valueOf(request.getAttribute(ProjectConstants.AUD_CUO, RequestAttributes.SCOPE_REQUEST));
-    Map<String, Object> body = new LinkedHashMap<>();
-    body.put("codigo", HttpStatus.INTERNAL_SERVER_ERROR.toString().substring(0, 4));
-    StringBuilder builder = new StringBuilder();
-    builder.append("Ocurrió un error no controlado. Error : ");
-    builder.append(ex);
-    body.put("descripcion", "Ocurrió un error no controlado.");
-    body.put("codigoOperacion", cuo);
-    body.put("data", null);
-    log.error("{} {} {}", cuo, builder.toString(), ex);
-    return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.OK); // 500 -
-                                                                         // HttpStatus.INTERNAL_SERVER_ERROR
+  ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
+    var response = new GlobalResponse();
+    response.setCodigoOperacion(String
+        .valueOf(request.getAttribute(ProjectConstants.AUD_CUO, RequestAttributes.SCOPE_REQUEST)));
+    response.setCodigo(TipoError.ERROR_INESPERADO.getCodigo());
+    response.setDescripcion(TipoError.ERROR_INESPERADO.getDescripcion());
+    return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
   }
+
+  @ExceptionHandler({CaptchaException.class})
+  ResponseEntity<GlobalResponse> handleCaptchaException(CaptchaException ex, WebRequest request) {
+    var response = new GlobalResponse();
+    response.setCodigoOperacion(String
+        .valueOf(request.getAttribute(ProjectConstants.AUD_CUO, RequestAttributes.SCOPE_REQUEST)));
+    response.setCodigo(TipoError.ERROR_TOKEN_CAPTCHA.getCodigo());
+    response.setDescripcion(TipoError.ERROR_TOKEN_CAPTCHA.getDescripcion());
+    return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
+  }
+
+  @ExceptionHandler({TokenException.class})
+  ResponseEntity<GlobalResponse> handleTokenException(TokenException ex, WebRequest request) {
+    var response = new GlobalResponse();
+    response.setCodigoOperacion(String
+        .valueOf(request.getAttribute(ProjectConstants.AUD_CUO, RequestAttributes.SCOPE_REQUEST)));
+    response.setCodigo(TipoError.ERROR_TOKEN_ERRADO.getCodigo());
+    response.setDescripcion(TipoError.ERROR_TOKEN_ERRADO.getDescripcion());
+    return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+  }
+
+  @ExceptionHandler({DatosNoEncontradosException.class})
+  ResponseEntity<GlobalResponse> handleDatosNoEncontradosException(DatosNoEncontradosException ex,
+      WebRequest request) {
+    var response = new GlobalResponse();
+    response.setCodigoOperacion(String
+        .valueOf(request.getAttribute(ProjectConstants.AUD_CUO, RequestAttributes.SCOPE_REQUEST)));
+    response.setCodigo(TipoError.DATOS_NO_ENCONTRADOS.getCodigo());
+    response.setDescripcion(TipoError.DATOS_NO_ENCONTRADOS.getDescripcion());
+    return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
+  }
+
+  @ExceptionHandler({PersonaYaExisteException.class})
+  ResponseEntity<GlobalResponse> handlePersonaYaExisteException(PersonaYaExisteException ex,
+      WebRequest request) {
+    var response = new GlobalResponse();
+    response.setCodigoOperacion(String
+        .valueOf(request.getAttribute(ProjectConstants.AUD_CUO, RequestAttributes.SCOPE_REQUEST)));
+    response.setCodigo(TipoError.PERSONA_YA_REGISTRADA.getCodigo());
+    response.setDescripcion(TipoError.PERSONA_YA_REGISTRADA.getDescripcion());
+    return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
+  }
+
+  @ExceptionHandler({OpcionesNoAsignadadException.class})
+  ResponseEntity<GlobalResponse> handleOpcionesNoAsignadadException(OpcionesNoAsignadadException ex,
+      WebRequest request) {
+    var response = new GlobalResponse();
+    response.setCodigoOperacion(String
+        .valueOf(request.getAttribute(ProjectConstants.AUD_CUO, RequestAttributes.SCOPE_REQUEST)));
+    response.setCodigo(TipoError.OPCIONES_NOASIGNADAS.getCodigo());
+    response.setDescripcion(TipoError.OPCIONES_NOASIGNADAS.getDescripcion());
+    return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
+  }
+
+  @ExceptionHandler({UsuarioSinPerfilAsignadoException.class})
+  ResponseEntity<GlobalResponse> handleUsuarioSinPerfilAsignadoException(
+      UsuarioSinPerfilAsignadoException ex, WebRequest request) {
+    var response = new GlobalResponse();
+    var cuo = String
+        .valueOf(request.getAttribute(ProjectConstants.AUD_CUO, RequestAttributes.SCOPE_REQUEST));
+    response.setCodigoOperacion(cuo);
+    response.setCodigo(TipoError.PERFIL_NO_ASIGNADO.getCodigo());
+    response.setDescripcion(TipoError.PERFIL_NO_ASIGNADO.getDescripcion());
+    UtilInfraestructure.handleException(cuo, ex, TipoError.PERFIL_NO_ASIGNADO);
+    return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
+  }
+
+  @ExceptionHandler({CredencialesSinCoincidenciaException.class})
+  ResponseEntity<GlobalResponse> handleCredencialesSinCoincidenciaException(
+      CredencialesSinCoincidenciaException ex, WebRequest request) {
+    var response = new GlobalResponse();
+    var cuo = String
+        .valueOf(request.getAttribute(ProjectConstants.AUD_CUO, RequestAttributes.SCOPE_REQUEST));
+    response.setCodigoOperacion(cuo);
+    response.setCodigo(TipoError.CREDENCIALES_INCORRECTAS.getCodigo());
+    response.setDescripcion(TipoError.CREDENCIALES_INCORRECTAS.getDescripcion());
+    UtilInfraestructure.handleException(cuo, ex, TipoError.CREDENCIALES_INCORRECTAS);
+    return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
+  }
+
+
 }

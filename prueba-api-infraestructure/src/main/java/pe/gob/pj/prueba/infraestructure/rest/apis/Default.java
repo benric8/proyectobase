@@ -19,7 +19,7 @@ import pe.gob.pj.prueba.infraestructure.rest.responses.AplicativoTokenResponse;
 @RestController
 @RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 @Tag(name = "Preestablecido", description = "API para manejar endpoints bases")
-public interface Default extends Base {
+public interface Default {
 
   /**
    * Método que sirve para verificar versión actual del aplicativo

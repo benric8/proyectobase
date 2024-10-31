@@ -1,13 +1,11 @@
 package pe.gob.pj.prueba.infraestructure.db.negocio.entities;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,9 +31,8 @@ public class MaeTipoDocumentoPersonaEntity implements Serializable {
   String abreviatura;
 
   // Auditoria
-  @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "F_AUD")
-  Date fAud = new Date();
+  LocalDateTime fAud = LocalDateTime.now();
   @Column(name = "B_AUD")
   String bAud = OperacionBaseDato.INSERTAR.getNombre();
   @Column(name = "C_AUD_UID")

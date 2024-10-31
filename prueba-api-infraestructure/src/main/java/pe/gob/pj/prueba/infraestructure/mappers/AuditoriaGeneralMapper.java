@@ -15,7 +15,7 @@ public interface AuditoriaGeneralMapper {
   @Mapping(target = "nombrePc", source = "auditoriaRequest.nombrePc")
   @Mapping(target = "numeroIp", source = "auditoriaRequest.numeroIp")
   @Mapping(target = "direccionMac", source = "auditoriaRequest.direccionMac")
-  @Mapping(target = "fechaRegistro", expression = "java(new java.util.Date())")
+  @Mapping(target = "fechaRegistro", expression = "java(java.time.LocalDateTime.now())")
   @Mapping(target = "codigoUnicoOperacion", source = "cuo")
   @Mapping(target = "ips", source = "ips")
   @Mapping(target = "usuarioAuth", source = "usuauth")

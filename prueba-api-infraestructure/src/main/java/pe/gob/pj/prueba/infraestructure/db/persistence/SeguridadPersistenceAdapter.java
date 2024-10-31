@@ -26,7 +26,7 @@ public class SeguridadPersistenceAdapter implements SeguridadPersistencePort {
   final MaeRolRepository maeRolRepository;
 
   @Override
-  public String autenticarUsuario(String cuo, AutenticacionUsuarioQuery query) throws Exception {
+  public String autenticarUsuario(String cuo, AutenticacionUsuarioQuery query) {
     var nAplicacion = ProjectProperties.getSeguridadIdAplicativo();
     return maeRolUsuarioRepository
         .autenticarUsuario(query.usuario(), EncryptUtils.encrypt(query.usuario(), query.clave()),
@@ -35,7 +35,7 @@ public class SeguridadPersistenceAdapter implements SeguridadPersistencePort {
   }
 
   @Override
-  public Usuario recuperaInfoUsuario(String cuo, String id) throws Exception {
+  public Usuario recuperaInfoUsuario(String cuo, String id) {
     return maeUsuarioRepository.findById(Integer.valueOf(id))
         .map(usuario -> Usuario.builder().id(usuario.getNusuario()).cUsuario(usuario.getCUsuario())
             .cClave(usuario.getCClave()).lActivo(usuario.getActivo()).build())
@@ -43,7 +43,7 @@ public class SeguridadPersistenceAdapter implements SeguridadPersistencePort {
   }
 
   @Override
-  public List<Rol> recuperarRoles(String cuo, String id) throws Exception {
+  public List<Rol> recuperarRoles(String cuo, String id) {
     return maeRolRepository
         .findByActivoAndMaeRolUsuariosMaeUsuarioNusuario(Estado.ACTIVO_NUMERICO.getNombre(),
             Integer.parseInt(id))
@@ -52,8 +52,7 @@ public class SeguridadPersistenceAdapter implements SeguridadPersistencePort {
   }
 
   @Override
-  public String validarAccesoMetodo(String cuo, String usuario, String rol, String operacion)
-      throws Exception {
+  public String validarAccesoMetodo(String cuo, String usuario, String rol, String operacion) {
     var rpta = new StringBuilder("");
     maeRolUsuarioRepository.obtenerAccesoMetodo(usuario, rol, operacion)
         .ifPresent(rolusuario -> rolusuario.getMaeRol().getMaeOperacions().stream()

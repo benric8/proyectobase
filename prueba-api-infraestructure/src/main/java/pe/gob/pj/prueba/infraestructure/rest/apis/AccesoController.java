@@ -20,9 +20,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import pe.gob.pj.prueba.domain.enums.Errors;
-import pe.gob.pj.prueba.domain.enums.Proceso;
-import pe.gob.pj.prueba.domain.exceptions.ErrorException;
+import pe.gob.pj.prueba.domain.exceptions.CaptchaException;
+import pe.gob.pj.prueba.domain.exceptions.TokenException;
 import pe.gob.pj.prueba.domain.model.servicio.PerfilUsuario;
 import pe.gob.pj.prueba.domain.port.usecase.AccesoUseCasePort;
 import pe.gob.pj.prueba.domain.utils.CaptchaUtils;
@@ -52,46 +51,35 @@ public class AccesoController implements Acceso {
 
     var res = new UsuarioResponse();
     res.setCodigoOperacion(cuo);
-    try {
-      if (!request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
-          || (request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
-              && !ProjectUtils.isNullOrEmpty(request.getTokenCaptcha()))) {
-        if (!request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
-            || CaptchaUtils.validCaptcha(request.getTokenCaptcha(), ip, cuo)) {
-          var usuario = accesoUC.iniciarSesion(cuo, request.getUsuario(), request.getClave());
-          var rolesUsuario = usuario.getPerfiles().stream().map(PerfilUsuario::getRol).toList();
 
-          var token = generarNuevoToken(jwt, request.getUsuario(), rolesUsuario, ip, cuo);
-          if (!ProjectUtils.isNullOrEmpty(token)) {
-            usuario.setToken(token);
-            res.setData(usuario);
-          } else {
-            res.setCodigo(Errors.ERROR_TOKEN_NO_VALIDO.getCodigo());
-            res.setDescripcion(Errors.ERROR_TOKEN_NO_VALIDO.getNombre());
-          }
-        } else {
-          log.error(
-              "{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición",
-              cuo, request.getAplicaCaptcha(), request.getTokenCaptcha(), ip);
-          throw new ErrorException(Errors.ERROR_TOKEN_CAPTCHA.getCodigo(), String
-              .format(Errors.ERROR_TOKEN_CAPTCHA.getNombre(), Proceso.INICIAR_SESION.getNombre()));
-        }
+    if (!request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
+        || (request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
+            && !ProjectUtils.isNullOrEmpty(request.getTokenCaptcha()))) {
+
+      if (!request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
+          || CaptchaUtils.validCaptcha(request.getTokenCaptcha(), ip, cuo)) {
+        var usuario = accesoUC.iniciarSesion(cuo, request.getUsuario(), request.getClave());
+
+        var token = generarNuevoToken(cuo, jwt, request.getUsuario(),
+            usuario.getPerfiles().stream().map(PerfilUsuario::getRol).toList(), ip);
+
+        usuario.setToken(token);
+        res.setData(usuario);
+
       } else {
         log.error(
             "{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición",
             cuo, request.getAplicaCaptcha(), request.getTokenCaptcha(), ip);
-        throw new ErrorException(Errors.ERROR_TOKEN_CAPTCHA.getCodigo(), String
-            .format(Errors.ERROR_TOKEN_CAPTCHA.getNombre(), Proceso.INICIAR_SESION.getNombre()));
+        throw new CaptchaException();
       }
-    } catch (ErrorException e) {
-      res.setCodigo(e.getCodigo());
-      res.setDescripcion(e.getDescripcion());
-      handleException(cuo, e);
-    } catch (Exception e) {
-      res.errorInesperado(Proceso.INICIAR_SESION.getNombre());
-      handleException(cuo,
-          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
+
+    } else {
+      log.error(
+          "{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición",
+          cuo, request.getAplicaCaptcha(), request.getTokenCaptcha(), ip);
+      throw new CaptchaException();
     }
+
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.parseMediaType(
         FormatoRespuesta.XML.getNombre().equalsIgnoreCase(request.getFormatoRespuesta())
@@ -105,29 +93,14 @@ public class AccesoController implements Acceso {
       @Valid ObtenerOpcionesRequest request) {
     var res = new PerfilOpcionesResponse();
     res.setCodigoOperacion(cuo);
-    try {
 
-      var perfilOpciones = accesoUC.obtenerOpciones(cuo, request.getIdPerfil());
+    var perfilOpciones = accesoUC.obtenerOpciones(cuo, request.getIdPerfil());
+    var token = generarNuevoToken(cuo, jwt, request.getUsuario(),
+        Arrays.asList(perfilOpciones.getRol()), ip);
 
-      var rolesPerfil = Arrays.asList(perfilOpciones.getRol());
-      var token = generarNuevoToken(jwt, request.getUsuario(), rolesPerfil, ip, cuo);
-      if (!ProjectUtils.isNullOrEmpty(token)) {
-        perfilOpciones.setToken(token);
-        res.setData(perfilOpciones);
-      } else {
-        res.setCodigo(Errors.ERROR_TOKEN_NO_VALIDO.getCodigo());
-        res.setDescripcion(Errors.ERROR_TOKEN_NO_VALIDO.getNombre());
-      }
-    } catch (ErrorException e) {
-      res.setCodigo(e.getCodigo());
-      res.setDescripcion(e.getDescripcion());
-      handleException(cuo, e);
-    } catch (Exception e) {
-      res.errorInesperado(Proceso.ELEGIR_PERFIL.getNombre());
-      handleException(cuo,
-          new ErrorException(res.getCodigo(), res.getDescripcion(), e.getMessage(), e.getCause()));
+    perfilOpciones.setToken(token);
+    res.setData(perfilOpciones);
 
-    }
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.parseMediaType(
         FormatoRespuesta.XML.getNombre().equalsIgnoreCase(request.getFormatoRespuesta())
@@ -136,71 +109,63 @@ public class AccesoController implements Acceso {
     return new ResponseEntity<>(res, headers, HttpStatus.OK);
   }
 
-  private String generarNuevoToken(String token, String usuario, List<String> rolesUsuario,
-      String ipRemota, String cuo) {
+  private String generarNuevoToken(String cuo, String token, String usuario,
+      List<String> rolesUsuario, String ipRemota) {
     var newToken = "";
     var rolSeleccionado = new StringBuilder();
+    var signingKey = SecurityConstants.JWT_SECRET.getBytes();
     try {
-      var signingKey = SecurityConstants.JWT_SECRET.getBytes();
-      try {
-        Jws<Claims> parsedToken = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(signingKey))
-            .build().parseClaimsJws(token);
+      Jws<Claims> parsedToken = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(signingKey))
+          .build().parseClaimsJws(token);
 
-        @SuppressWarnings("unchecked")
-        List<String> rolesToken = (List<String>) parsedToken.getBody().get(Claim.ROLES.getNombre());
+      @SuppressWarnings("unchecked")
+      List<String> rolesToken = (List<String>) parsedToken.getBody().get(Claim.ROLES.getNombre());
 
-        rolSeleccionado.append(rolesUsuario.get(0));
-        if (rolesToken.stream().filter(x -> x.equals(rolSeleccionado.toString())).count() < 1)
-          return newToken;
-        else
-          rolesToken = rolesUsuario;
-
-
-        var ipRemotaToken =
-            parsedToken.getBody().get(Claim.IP_REALIZA_PETICION.getNombre()).toString();
-        var subject = parsedToken.getBody().getSubject();
-
-        var ahora = new Date();
-
-        var tiempoSegundosExpira = ProjectProperties.getSeguridadTiempoExpiraSegundos();
-        var tiempoSegundosRefresh = ProjectProperties.getSeguridadTiempoRefreshSegundos();
-
-        if (ipRemota.equals(ipRemotaToken) && !rolesToken.isEmpty()) {
-          newToken =
-              Jwts.builder().signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
-                  .setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)
-                  .setIssuer(SecurityConstants.TOKEN_ISSUER)
-                  .setAudience(SecurityConstants.TOKEN_AUDIENCE).setSubject(subject)
-                  .setExpiration(ProjectUtils.sumarRestarSegundos(ahora, tiempoSegundosExpira))
-                  .claim(Claim.ROLES.getNombre(), rolesToken)
-                  .claim(Claim.ROL_SELECCIONADO.getNombre(), rolSeleccionado.toString())
-                  .claim(Claim.USUARIO_REALIZA_PETICION.getNombre(), usuario)
-                  .claim(Claim.IP_REALIZA_PETICION.getNombre(), ipRemota)
-                  .claim(Claim.LIMITE_TOKEN.getNombre(), ProjectUtils.sumarRestarSegundos(ahora,
-                      tiempoSegundosExpira + tiempoSegundosRefresh))
-                  .compact();
-        }
-      } catch (ExpiredJwtException e) {
-        var roles = rolesUsuario;
-        var ipRemotaToken = e.getClaims().get(Claim.IP_REALIZA_PETICION.getNombre()).toString();
-        var subject = e.getClaims().getSubject();
-        var tiempoToken = ProjectProperties.getSeguridadTiempoExpiraSegundos();
-        if (ipRemota.equals(ipRemotaToken)) {
-          newToken =
-              Jwts.builder().signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
-                  .setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)
-                  .setIssuer(SecurityConstants.TOKEN_ISSUER)
-                  .setAudience(SecurityConstants.TOKEN_AUDIENCE).setSubject(subject)
-                  .setExpiration(new Date(System.currentTimeMillis() + tiempoToken))
-                  .claim(Claim.ROLES.getNombre(), roles)
-                  .claim(Claim.ROL_SELECCIONADO.getNombre(), rolSeleccionado.toString())
-                  .claim(Claim.USUARIO_REALIZA_PETICION.getNombre(), usuario)
-                  .claim(Claim.IP_REALIZA_PETICION.getNombre(), ipRemota).compact();
-        }
+      rolSeleccionado.append(rolesUsuario.get(0));
+      if (rolesToken.stream().filter(x -> x.equals(rolSeleccionado.toString())).count() < 1) {
+        log.error(
+            "{} Error al generar nuevo token, el rol seleccionado [{}] no es un rol asignado al usuario [{}].",
+            cuo, rolSeleccionado, usuario);
+        throw new TokenException();
       }
-    } catch (Exception e) {
-      log.error("{} error al intentar generar nuevo Token: {}", cuo,
-          ProjectUtils.isNull(e.getCause()).concat(e.getMessage()));
+      rolesToken = rolesUsuario;
+
+      var ipRemotaToken =
+          parsedToken.getBody().get(Claim.IP_REALIZA_PETICION.getNombre()).toString();
+      var subject = parsedToken.getBody().getSubject();
+      var ahora = new Date();
+      var tiempoSegundosExpira = ProjectProperties.getSeguridadTiempoExpiraSegundos();
+      var tiempoSegundosRefresh = ProjectProperties.getSeguridadTiempoRefreshSegundos();
+
+      if (ipRemota.equals(ipRemotaToken) && !rolesToken.isEmpty()) {
+        newToken = Jwts.builder().signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
+            .setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)
+            .setIssuer(SecurityConstants.TOKEN_ISSUER).setAudience(SecurityConstants.TOKEN_AUDIENCE)
+            .setSubject(subject)
+            .setExpiration(ProjectUtils.sumarRestarSegundos(ahora, tiempoSegundosExpira))
+            .claim(Claim.ROLES.getNombre(), rolesToken)
+            .claim(Claim.ROL_SELECCIONADO.getNombre(), rolSeleccionado.toString())
+            .claim(Claim.USUARIO_REALIZA_PETICION.getNombre(), usuario)
+            .claim(Claim.IP_REALIZA_PETICION.getNombre(), ipRemota)
+            .claim(Claim.LIMITE_TOKEN.getNombre(), ProjectUtils.sumarRestarSegundos(ahora,
+                tiempoSegundosExpira + tiempoSegundosRefresh))
+            .compact();
+      }
+    } catch (ExpiredJwtException e) {
+      var roles = rolesUsuario;
+      var ipRemotaToken = e.getClaims().get(Claim.IP_REALIZA_PETICION.getNombre()).toString();
+      var subject = e.getClaims().getSubject();
+      var tiempoToken = ProjectProperties.getSeguridadTiempoExpiraSegundos();
+      if (ipRemota.equals(ipRemotaToken)) {
+        newToken = Jwts.builder().signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
+            .setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)
+            .setIssuer(SecurityConstants.TOKEN_ISSUER).setAudience(SecurityConstants.TOKEN_AUDIENCE)
+            .setSubject(subject).setExpiration(new Date(System.currentTimeMillis() + tiempoToken))
+            .claim(Claim.ROLES.getNombre(), roles)
+            .claim(Claim.ROL_SELECCIONADO.getNombre(), rolSeleccionado.toString())
+            .claim(Claim.USUARIO_REALIZA_PETICION.getNombre(), usuario)
+            .claim(Claim.IP_REALIZA_PETICION.getNombre(), ipRemota).compact();
+      }
     }
     return newToken;
   }
