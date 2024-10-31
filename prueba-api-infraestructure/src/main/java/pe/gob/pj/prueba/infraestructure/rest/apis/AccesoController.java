@@ -68,14 +68,14 @@ public class AccesoController implements Acceso {
 
       } else {
         log.error(
-            "{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición",
+            "{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición {}",
             cuo, request.getAplicaCaptcha(), request.getTokenCaptcha(), ip);
         throw new CaptchaException();
       }
 
     } else {
       log.error(
-          "{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición",
+          "{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición {}",
           cuo, request.getAplicaCaptcha(), request.getTokenCaptcha(), ip);
       throw new CaptchaException();
     }
