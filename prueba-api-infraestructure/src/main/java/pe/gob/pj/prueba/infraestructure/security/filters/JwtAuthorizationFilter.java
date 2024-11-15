@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.exceptions.TokenException;
+import pe.gob.pj.prueba.domain.model.auditoriageneral.PeticionServicios;
 import pe.gob.pj.prueba.domain.port.usecase.SeguridadUseCasePort;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectProperties;
@@ -39,7 +40,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   @Setter
   private SeguridadUseCasePort seguridadService;
   private final List<String> permittedPaths =
-      Arrays.asList("/healthcheck", "/swagger-ui", "/v3/api-docs", "/swagger-ui.html");
+      Arrays.asList("/healthcheck", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html");
 
   public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
       SeguridadUseCasePort servicio) {
@@ -63,7 +64,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     agregarAtributos(request);
 
-    if (isPermittedPath(request)) {
+    if (!dominioPermitido(request)) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
+    if (pathNoRequiereAutorizacion(request)) {
       filterChain.doFilter(request, response);
       return;
     }
@@ -77,23 +83,34 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
   }
 
-  private boolean isPermittedPath(HttpServletRequest request) {
+  private boolean pathNoRequiereAutorizacion(HttpServletRequest request) {
     var path = request.getRequestURI();
     return permittedPaths.stream().anyMatch(path::contains);
   }
 
+  private boolean dominioPermitido(HttpServletRequest request) {
+    String referer = request.getHeader("Referer");
+    String todos = "*";
+
+    log.warn("ORIGIN {}, Dominios permitidos {}", referer,
+        Arrays.toString(ProjectProperties.getSeguridadDominiosPermitidos()));
+
+    return Arrays.asList(ProjectProperties.getSeguridadDominiosPermitidos()).stream()
+        .anyMatch(todos::contains)
+        || (Objects.nonNull(referer)
+            && Arrays.asList(ProjectProperties.getSeguridadDominiosPermitidos()).stream()
+                .anyMatch(referer::contains));
+  }
+
   private void agregarAtributos(HttpServletRequest request) {
-    request.setAttribute(ProjectConstants.AUD_CUO, ProjectUtils.obtenerCodigoUnico());
-    request.setAttribute(ProjectConstants.AUD_IP,
-        !ProjectUtils.isNullOrEmpty(request.getRemoteAddr()) ? request.getRemoteAddr()
-            : request.getRemoteHost());
-    request.setAttribute(ProjectConstants.AUD_USUARIO, ProjectConstants.Caracter.VACIO);
-    request.setAttribute(ProjectConstants.AUD_URI, request.getRequestURI());
-    request.setAttribute(ProjectConstants.AUD_PARAMS,
-        Objects.nonNull(request.getQueryString()) ? request.getQueryString()
-            : ProjectConstants.Caracter.VACIO);
-    request.setAttribute(ProjectConstants.AUD_HERRAMIENTA, request.getHeader("User-Agent"));
-    request.setAttribute(ProjectConstants.AUD_IPS, obtenerIps(request));
+    request.setAttribute(ProjectConstants.PETICION,
+        PeticionServicios.builder().cuo(ProjectUtils.obtenerCodigoUnico())
+            .ip(!ProjectUtils.isNullOrEmpty(request.getRemoteAddr()) ? request.getRemoteAddr()
+                : request.getRemoteHost())
+            .usuario(ProjectConstants.Caracter.VACIO).uri(request.getRequestURI())
+            .params(Objects.nonNull(request.getQueryString()) ? request.getQueryString()
+                : ProjectConstants.Caracter.VACIO)
+            .herramienta(request.getHeader("User-Agent")).ips(obtenerIps(request)).build());
   }
 
   private String obtenerIps(HttpServletRequest request) {
@@ -115,24 +132,22 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
    */
   private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
 
+    var peticion = (PeticionServicios) request.getAttribute(ProjectConstants.PETICION);
     String urlReq = request.getRequestURI();
-    String metodo = request.getMethod();
-    if (metodo.equalsIgnoreCase(ProjectConstants.METHOD_CORTA_ULTIMA_BARRA_INVERTIDA)) {
-      urlReq = urlReq.substring(0, urlReq.lastIndexOf("/"));// corta el id que se manda en la url
-    }
     String token = request.getHeader(SecurityConstants.TOKEN_HEADER);
-    String remoteIp = request.getAttribute(ProjectConstants.AUD_IP).toString();
-    String cuo = request.getAttribute(ProjectConstants.AUD_CUO).toString();
+    String remoteIp = peticion.getIp();
+    String cuo = peticion.getCuo();
     byte[] signingKey = SecurityConstants.JWT_SECRET.getBytes();
+
     if (!ProjectUtils.isNullOrEmpty(token) && token.startsWith(SecurityConstants.TOKEN_PREFIX)) {
       try {
         String jwt = token.replace(SecurityConstants.TOKEN_PREFIX, "");
-        request.setAttribute(ProjectConstants.AUD_JWT, jwt);
         Jws<Claims> parsedToken = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(signingKey))
             .build().parseClaimsJws(jwt);
-
         String username = parsedToken.getBody().getSubject();
-        request.setAttribute(ProjectConstants.AUD_USUARIO, username);
+
+        peticion.setUsuario(username);
+        peticion.setJwt(jwt);
 
         String rolSeleccionado =
             (String) parsedToken.getBody().get(Claim.ROL_SELECCIONADO.getNombre());
@@ -150,8 +165,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         Date limiteExpira = parsedToken.getBody().getExpiration();
         Date limiteRefresh = ProjectUtils.sumarRestarSegundos(limiteExpira, tiempoSegundosRefresh);
 
-        if (!urlReq.endsWith("refresh") && ProjectUtils.isNullOrEmpty(
-            seguridadService.validarAccesoMetodo(cuo, username, rolSeleccionado, urlReq))) {
+        if (!urlReq.endsWith("refresh") && seguridadService
+            .validarAccesoMetodo(cuo, username, rolSeleccionado, urlReq).isEmpty()) {
           log.warn("{} El usuario [{}] con rol [{}], no tiene acceso al método [{}] ", cuo,
               username, rolSeleccionado, urlReq);
           return null;
@@ -186,7 +201,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
           return new UsernamePasswordAuthenticationToken(subject, null, authorities);
         }
         log.warn("{} Request to parse expired JWT : {} failed : {}", cuo, exception.getMessage());
-      } 
+      }
     }
     return null;
   }

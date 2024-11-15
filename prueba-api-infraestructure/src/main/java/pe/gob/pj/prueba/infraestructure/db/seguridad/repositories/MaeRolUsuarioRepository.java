@@ -1,9 +1,11 @@
 package pe.gob.pj.prueba.infraestructure.db.seguridad.repositories;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import pe.gob.pj.prueba.infraestructure.db.seguridad.entities.MaeOperacionEntity;
 import pe.gob.pj.prueba.infraestructure.db.seguridad.entities.MaeRolUsuarioEntity;
 import pe.gob.pj.prueba.infraestructure.db.seguridad.entities.MaeUsuarioEntity;
 
@@ -33,7 +35,7 @@ public interface MaeRolUsuarioRepository extends JpaRepository<MaeRolUsuarioEnti
       @Param("nAplicativo") Integer aplicativo);
 
   @Query(value = """
-      SELECT ru
+      SELECT op
       FROM MaeRolUsuarioEntity ru
       JOIN ru.maeRol r
       JOIN r.maeOperacions op
@@ -44,9 +46,8 @@ public interface MaeRolUsuarioRepository extends JpaRepository<MaeRolUsuarioEnti
       AND op.activo = '1'
       AND r.cRol = :codRol
       AND u.cUsuario = :cUsuario
-      AND op.xEndpoint =:operacion
             """)
-  Optional<MaeRolUsuarioEntity> obtenerAccesoMetodo(@Param("cUsuario") String usuario,
-      @Param("codRol") String rol, @Param("operacion") String operacion);
+  List<MaeOperacionEntity> obtenerAccesoMetodos(@Param("cUsuario") String usuario,
+      @Param("codRol") String rol);
 
 }

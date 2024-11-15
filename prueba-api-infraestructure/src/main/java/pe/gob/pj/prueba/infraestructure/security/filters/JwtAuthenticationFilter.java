@@ -111,9 +111,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     int tiempoSegundosRefresh = ProjectProperties.getSeguridadTiempoRefreshSegundos();
     String codigoRolSeleccionado = request.getHeader(SecurityConstants.HEAD_COD_ROL);
 
-    String token = Jwts.builder().signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
+    String token = Jwts.builder()
+        .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
         .setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)
-        .setIssuer(SecurityConstants.TOKEN_ISSUER).setAudience(SecurityConstants.TOKEN_AUDIENCE)
+        .setIssuer(SecurityConstants.TOKEN_ISSUER)
+        .setAudience(SecurityConstants.TOKEN_AUDIENCE)
         .setSubject(user.getUsername())
         .setExpiration(ProjectUtils.sumarRestarSegundos(ahora, tiempoSegundosExpira))
         .claim(Claim.ROLES.getNombre(), roles)

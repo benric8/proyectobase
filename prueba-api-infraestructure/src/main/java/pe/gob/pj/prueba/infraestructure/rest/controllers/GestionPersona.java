@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.rest.apis;
+package pe.gob.pj.prueba.infraestructure.rest.controllers;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +17,17 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import pe.gob.pj.prueba.domain.model.auditoriageneral.PeticionServicios;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.infraestructure.rest.requests.PersonaRequest;
 import pe.gob.pj.prueba.infraestructure.rest.responses.ConsultaPersonaResponse;
 import pe.gob.pj.prueba.infraestructure.rest.responses.PersonaResponse;
 
 @RestController
+@Validated
 @RequestMapping(value = "personas",
     produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 @Tag(name = "GestionPersona", description = "API para administrar registros de personas")
@@ -34,13 +37,7 @@ public interface GestionPersona {
    * 
    * GET /personas : Consultar datos de persona
    * 
-   * @param cuo
-   * @param ips
-   * @param usuauth
-   * @param uri
-   * @param params
-   * @param herramienta
-   * @param ip
+   * @param peticion
    * @param formatoRespuesta
    * @param numeroDocumento
    * @return
@@ -55,13 +52,7 @@ public interface GestionPersona {
   @ApiResponse(responseCode = "403",
       description = "El cliente no esta autorizado para esta operación")
   public ResponseEntity<ConsultaPersonaResponse> consultarPersonas(
-      @RequestAttribute(name = ProjectConstants.AUD_CUO) String cuo,
-      @RequestAttribute(name = ProjectConstants.AUD_IPS) String ips,
-      @RequestAttribute(name = ProjectConstants.AUD_USUARIO) String usuauth,
-      @RequestAttribute(name = ProjectConstants.AUD_URI) String uri,
-      @RequestAttribute(name = ProjectConstants.AUD_PARAMS) String params,
-      @RequestAttribute(name = ProjectConstants.AUD_HERRAMIENTA) String herramienta,
-      @RequestAttribute(name = ProjectConstants.AUD_IP) String ip,
+      @RequestAttribute(name = ProjectConstants.PETICION) PeticionServicios peticion,
       @RequestParam(defaultValue = "json", required = false) String formatoRespuesta,
       @Size(min = 8, max = 8,
           message = "El parámetro numero_documento tiene un tamaño no valido [min1,max=1].") @Pattern(
@@ -73,13 +64,7 @@ public interface GestionPersona {
    * 
    * POST /personas/crear : Crear persona en base a los datos enviados
    * 
-   * @param cuo
-   * @param ips
-   * @param usuauth
-   * @param uri
-   * @param params
-   * @param herramienta
-   * @param ip
+   * @param peticion
    * @param persona
    * @return
    */
@@ -93,31 +78,19 @@ public interface GestionPersona {
   @ApiResponse(responseCode = "403",
       description = "El cliente no esta autorizado para esta operación")
   public ResponseEntity<PersonaResponse> registrarPersona(
-      @RequestAttribute(name = ProjectConstants.AUD_CUO) String cuo,
-      @RequestAttribute(name = ProjectConstants.AUD_IPS) String ips,
-      @RequestAttribute(name = ProjectConstants.AUD_USUARIO) String usuauth,
-      @RequestAttribute(name = ProjectConstants.AUD_URI) String uri,
-      @RequestAttribute(name = ProjectConstants.AUD_PARAMS) String params,
-      @RequestAttribute(name = ProjectConstants.AUD_HERRAMIENTA) String herramienta,
-      @RequestAttribute(name = ProjectConstants.AUD_IP) String ip,
+      @RequestAttribute(name = ProjectConstants.PETICION) PeticionServicios peticion,
       @Validated @RequestBody PersonaRequest persona);
 
   /***
    * 
    * PUT /personas/actualizar/{id} : Actualizar persona en base al id
    * 
-   * @param cuo
-   * @param ips
-   * @param usuauth
-   * @param uri
-   * @param params
-   * @param herramienta
-   * @param ip
+   * @param peticion
    * @param id
    * @param persona
    * @return
    */
-  @PutMapping(value = "actualizar/{id}")
+  @PutMapping(value = "{id}")
   @Operation(summary = "Actualizar Persona", operationId = "actualizarPersona",
       description = "Permite actualizar datos de una persona")
   @ApiResponse(responseCode = "200", description = "Actualización correcta",
@@ -127,13 +100,8 @@ public interface GestionPersona {
   @ApiResponse(responseCode = "403",
       description = "El cliente no esta autorizado para esta operación")
   public ResponseEntity<PersonaResponse> actualizarPersona(
-      @RequestAttribute(name = ProjectConstants.AUD_CUO) String cuo,
-      @RequestAttribute(name = ProjectConstants.AUD_IPS) String ips,
-      @RequestAttribute(name = ProjectConstants.AUD_USUARIO) String usuauth,
-      @RequestAttribute(name = ProjectConstants.AUD_URI) String uri,
-      @RequestAttribute(name = ProjectConstants.AUD_PARAMS) String params,
-      @RequestAttribute(name = ProjectConstants.AUD_HERRAMIENTA) String herramienta,
-      @RequestAttribute(name = ProjectConstants.AUD_IP) String ip, @PathVariable Integer id,
-      @Validated @RequestBody PersonaRequest persona);
+      @RequestAttribute(name = ProjectConstants.PETICION) PeticionServicios peticion,
+      @PathVariable Integer id,
+      @Valid @RequestBody PersonaRequest persona);
 
 }

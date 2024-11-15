@@ -1,6 +1,8 @@
 package pe.gob.pj.prueba.infraestructure.db.persistence;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import pe.gob.pj.prueba.domain.port.persistence.SeguridadPersistencePort;
 import pe.gob.pj.prueba.domain.utils.EncryptUtils;
 import pe.gob.pj.prueba.domain.utils.ProjectProperties;
 import pe.gob.pj.prueba.infraestructure.common.enums.Estado;
+import pe.gob.pj.prueba.infraestructure.db.seguridad.entities.MaeOperacionEntity;
 import pe.gob.pj.prueba.infraestructure.db.seguridad.repositories.MaeRolRepository;
 import pe.gob.pj.prueba.infraestructure.db.seguridad.repositories.MaeRolUsuarioRepository;
 import pe.gob.pj.prueba.infraestructure.db.seguridad.repositories.MaeUsuarioRepository;
@@ -52,12 +55,9 @@ public class SeguridadPersistenceAdapter implements SeguridadPersistencePort {
   }
 
   @Override
-  public String validarAccesoMetodo(String cuo, String usuario, String rol, String operacion) {
-    var rpta = new StringBuilder("");
-    maeRolUsuarioRepository.obtenerAccesoMetodo(usuario, rol, operacion)
-        .ifPresent(rolusuario -> rolusuario.getMaeRol().getMaeOperacions().stream()
-            .filter(x -> x.getXEndpoint().equalsIgnoreCase(operacion))
-            .forEach(x -> rpta.append(x.getXOperacion())));
-    return rpta.toString();
+  public Optional<String> validarAccesoMetodo(String cuo, String usuario, String rol, String operacion) {
+    return maeRolUsuarioRepository.obtenerAccesoMetodos(usuario, rol).stream()
+        .filter(op->Pattern.compile(op.getXEndpoint()).matcher(operacion).matches())
+        .map(MaeOperacionEntity::getXOperacion).findFirst();
   }
 }

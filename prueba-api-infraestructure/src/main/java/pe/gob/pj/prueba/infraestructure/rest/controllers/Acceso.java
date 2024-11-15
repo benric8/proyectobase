@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.rest.apis;
+package pe.gob.pj.prueba.infraestructure.rest.controllers;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import pe.gob.pj.prueba.domain.model.auditoriageneral.PeticionServicios;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.infraestructure.rest.requests.LoginRequest;
 import pe.gob.pj.prueba.infraestructure.rest.requests.ObtenerOpcionesRequest;
@@ -35,9 +36,8 @@ public interface Acceso {
   @ApiResponse(responseCode = "403",
       description = "El cliente no esta autorizado para esta operación")
   public ResponseEntity<UsuarioResponse> iniciarSesion(
-      @Parameter(hidden = true) @RequestAttribute(name = ProjectConstants.AUD_CUO) String cuo,
-      @Parameter(hidden = true) @RequestAttribute(name = ProjectConstants.AUD_IP) String ip,
-      @Parameter(hidden = true) @RequestAttribute(name = ProjectConstants.AUD_JWT) String jwt,
+      @Parameter(hidden = true) @RequestAttribute(
+          name = ProjectConstants.PETICION) PeticionServicios peticion,
       @Valid @RequestBody LoginRequest login);
 
   @PostMapping(value = "opciones")
@@ -50,8 +50,7 @@ public interface Acceso {
   @ApiResponse(responseCode = "403",
       description = "El cliente no esta autorizado para esta operación")
   public ResponseEntity<PerfilOpcionesResponse> obtenerOpciones(
-      @Parameter(hidden = true) @RequestAttribute(name = ProjectConstants.AUD_CUO) String cuo,
-      @Parameter(hidden = true) @RequestAttribute(name = ProjectConstants.AUD_IP) String ip,
-      @Parameter(hidden = true) @RequestAttribute(name = ProjectConstants.AUD_JWT) String jwt,
+      @Parameter(hidden = true) @RequestAttribute(
+          name = ProjectConstants.PETICION) PeticionServicios peticion,
       @Valid @RequestBody ObtenerOpcionesRequest perfil);
 }

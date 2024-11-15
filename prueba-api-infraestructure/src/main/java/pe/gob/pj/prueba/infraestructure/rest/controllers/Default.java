@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.rest.apis;
+package pe.gob.pj.prueba.infraestructure.rest.controllers;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import pe.gob.pj.prueba.domain.model.auditoriageneral.PeticionServicios;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.infraestructure.rest.responses.AplicativoResponse;
 import pe.gob.pj.prueba.infraestructure.rest.responses.AplicativoTokenResponse;
@@ -32,7 +33,7 @@ public interface Default {
   @ApiResponse(responseCode = "200", description = "Verificación exitosa",
       content = @Content(schema = @Schema(implementation = AplicativoResponse.class)))
   public ResponseEntity<AplicativoResponse> healthcheck(
-      @RequestAttribute(name = ProjectConstants.AUD_CUO) String cuo,
+      @RequestAttribute(name = ProjectConstants.PETICION) PeticionServicios peticion,
       @RequestParam(defaultValue = "json", required = false) String formatoRespuesta);
 
   /**
@@ -51,8 +52,7 @@ public interface Default {
   @ApiResponse(responseCode = "200", description = "Rfresh de token exitoso",
       content = @Content(schema = @Schema(implementation = AplicativoTokenResponse.class)))
   public ResponseEntity<AplicativoTokenResponse> refreshToken(
-      @RequestAttribute(name = ProjectConstants.AUD_CUO) String cuo,
-      @RequestAttribute(name = ProjectConstants.AUD_IP) String ipRemota,
+      @RequestAttribute(name = ProjectConstants.PETICION) PeticionServicios peticion,
       @RequestParam(required = true) String token);
 
 }

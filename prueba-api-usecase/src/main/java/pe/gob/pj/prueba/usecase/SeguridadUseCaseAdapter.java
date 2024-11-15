@@ -2,6 +2,7 @@ package pe.gob.pj.prueba.usecase;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +46,7 @@ public class SeguridadUseCaseAdapter implements SeguridadUseCasePort {
   @Override
   @Transactional(transactionManager = "txManagerSeguridad", propagation = Propagation.REQUIRED,
       readOnly = true, rollbackFor = {Exception.class, SQLException.class})
-  public String validarAccesoMetodo(String cuo, String usuario, String rol, String operacion) {
+  public Optional<String> validarAccesoMetodo(String cuo, String usuario, String rol, String operacion) {
     return seguridadPersistencePort.validarAccesoMetodo(cuo, usuario, rol, operacion);
   }
 

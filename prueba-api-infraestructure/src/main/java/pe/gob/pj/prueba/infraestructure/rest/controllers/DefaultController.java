@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.rest.apis;
+package pe.gob.pj.prueba.infraestructure.rest.controllers;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.exceptions.TokenException;
 import pe.gob.pj.prueba.domain.model.Aplicativo;
 import pe.gob.pj.prueba.domain.model.AplicativoToken;
+import pe.gob.pj.prueba.domain.model.auditoriageneral.PeticionServicios;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectProperties;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
@@ -36,10 +37,11 @@ public class DefaultController implements Default, Serializable {
   private static final long serialVersionUID = 1L;
 
   @GetMapping(value = "/healthcheck")
-  public ResponseEntity<AplicativoResponse> healthcheck(String cuo, String formatoRespuesta) {
+  public ResponseEntity<AplicativoResponse> healthcheck(PeticionServicios peticion,
+      String formatoRespuesta) {
     var res = new AplicativoResponse();
 
-    res.setCodigoOperacion(cuo);
+    res.setCodigoOperacion(peticion.getCuo());
     var healthcheck = new Aplicativo();
     healthcheck.setNombre(ProjectConstants.Aplicativo.NOMBRE);
     healthcheck.setEstado("Disponible");
@@ -57,10 +59,10 @@ public class DefaultController implements Default, Serializable {
 
   @SuppressWarnings("unchecked")
   @GetMapping(value = "/seguridad/refresh")
-  public ResponseEntity<AplicativoTokenResponse> refreshToken(String cuo, String ipRemota,
+  public ResponseEntity<AplicativoTokenResponse> refreshToken(PeticionServicios peticion,
       String token) {
     var res = new AplicativoTokenResponse();
-    res.setCodigoOperacion(cuo);
+    res.setCodigoOperacion(peticion.getCuo());
 
     byte[] signingKey = SecurityConstants.JWT_SECRET.getBytes();
 
@@ -85,7 +87,7 @@ public class DefaultController implements Default, Serializable {
       Date limiteExpira = parsedToken.getBody().getExpiration();
       Date limiteRefresh = ProjectUtils.sumarRestarSegundos(limiteExpira, tiempoSegundosRefresh);
 
-      if (ipRemota.equals(ipRemotaToken)) {
+      if (peticion.getIp().equals(ipRemotaToken)) {
         if (!ahora.after(limiteRefresh)) {
           var tokenResult =
               Jwts.builder().signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
@@ -96,7 +98,7 @@ public class DefaultController implements Default, Serializable {
                   .claim(Claim.ROLES.getNombre(), roles)
                   .claim(Claim.ROL_SELECCIONADO.getNombre(), rolSeleccionado)
                   .claim(Claim.USUARIO_REALIZA_PETICION.getNombre(), usuario)
-                  .claim(Claim.IP_REALIZA_PETICION.getNombre(), ipRemota)
+                  .claim(Claim.IP_REALIZA_PETICION.getNombre(), peticion.getIp())
                   .claim(Claim.LIMITE_TOKEN.getNombre(), ProjectUtils.sumarRestarSegundos(ahora,
                       tiempoSegundosExpira + tiempoSegundosRefresh))
                   .compact();
@@ -106,13 +108,13 @@ public class DefaultController implements Default, Serializable {
         } else {
           log.error(
               "{} El tiempo límite para refrescar el token enviado a expirado actual [{}] limite [{}].",
-              cuo, ahora, limiteRefresh);
+              peticion.getCuo(), ahora, limiteRefresh);
           throw new TokenException();
         }
       } else {
         log.error(
-            "{} La ip del token origen [{}] no coincide con la ip de la peticion actual [{}].", cuo,
-            ipRemotaToken, ipRemota);
+            "{} La ip del token origen [{}] no coincide con la ip de la peticion actual [{}].",
+            peticion.getCuo(), ipRemotaToken, peticion.getIp());
         throw new TokenException();
       }
     } catch (ExpiredJwtException e) {
@@ -130,7 +132,7 @@ public class DefaultController implements Default, Serializable {
       var limiteExpira = e.getClaims().getExpiration();
       var limiteRefresh = ProjectUtils.sumarRestarSegundos(limiteExpira, tiempoSegundosRefresh);
 
-      if (ipRemota.equals(ipRemotaToken)) {
+      if (peticion.getIp().equals(ipRemotaToken)) {
         if (!ahora.after(limiteRefresh)) {
           String tokenResult =
               Jwts.builder().signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
@@ -141,7 +143,7 @@ public class DefaultController implements Default, Serializable {
                   .claim(Claim.ROLES.getNombre(), roles)
                   .claim(Claim.ROL_SELECCIONADO.getNombre(), rolSeleccionado)
                   .claim(Claim.USUARIO_REALIZA_PETICION.getNombre(), usuario)
-                  .claim(Claim.IP_REALIZA_PETICION.getNombre(), ipRemota)
+                  .claim(Claim.IP_REALIZA_PETICION.getNombre(), peticion.getIp())
                   .claim(Claim.LIMITE_TOKEN.getNombre(), ProjectUtils.sumarRestarSegundos(ahora,
                       tiempoSegundosExpira + tiempoSegundosRefresh))
                   .compact();
@@ -153,13 +155,13 @@ public class DefaultController implements Default, Serializable {
         } else {
           log.error(
               "{} El tiempo límite para refrescar el token enviado a expirado actual [{}] limite [{}].",
-              cuo, ahora, limiteRefresh);
+              peticion.getCuo(), ahora, limiteRefresh);
           throw new TokenException();
         }
       } else {
         log.error(
-            "{} La ip del token origen [{}] no coincide con la ip de la peticion actual [{}].", cuo,
-            ipRemotaToken, ipRemota);
+            "{} La ip del token origen [{}] no coincide con la ip de la peticion actual [{}].",
+            peticion.getCuo(), ipRemotaToken, peticion.getIp());
         throw new TokenException();
       }
     }

@@ -13,7 +13,7 @@ public class ProjectProperties implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private static String seguridadDominiosPermitidos;
+  private static String[] seguridadDominiosPermitidos;
   private static String seguridadSecretToken;
   private static Integer seguridadIdAplicativo;
   private static Integer seguridadTiempoExpiraSegundos;
@@ -25,9 +25,9 @@ public class ProjectProperties implements Serializable {
   private static String captchaToken;
 
   public ProjectProperties(
-      @Value("${configuracion.seguridad.dominios.permitidos:*}") String seguridadDominiosPermitidos,
+      @Value("${configuracion.seguridad.dominios.permitidos:*}") String[] seguridadDominiosPermitidos,
       @Value("${configuracion.seguridad.key:null}") String seguridadSecretToken,
-      @Value("${configuracion.seguridad.idaplicativo:0}") Integer seguridadIdAplicativo,
+      @Value("${configuracion.seguridad.identificador.aplicativo:0}") Integer seguridadIdAplicativo,
       @Value("${configuracion.seguridad.authenticate.token.tiempo.expira.segundos:300}") Integer seguridadTiempoExpiraSegundos,
       @Value("${configuracion.seguridad.authenticate.token.tiempo.refresh.segundos:180}") Integer seguridadTiempoRefreshSegundos,
       @Value("${timeout.database.transaction.segundos:120}") int timeoutBdTransactionSegundos,
@@ -48,12 +48,8 @@ public class ProjectProperties implements Serializable {
     ProjectProperties.captchaToken = captchaToken;
   }
 
-  public static String getSeguridadDominiosPermitidos() {
+  public static String[] getSeguridadDominiosPermitidos() {
     return seguridadDominiosPermitidos;
-  }
-
-  public static void setSeguridadDominiosPermitidos(String seguridadDominiosPermitidos) {
-    ProjectProperties.seguridadDominiosPermitidos = seguridadDominiosPermitidos;
   }
 
   public static String getSeguridadSecretToken() {

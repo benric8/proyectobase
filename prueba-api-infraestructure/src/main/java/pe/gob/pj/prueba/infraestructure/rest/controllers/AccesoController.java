@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.infraestructure.rest.apis;
+package pe.gob.pj.prueba.infraestructure.rest.controllers;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -22,6 +22,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.exceptions.CaptchaException;
 import pe.gob.pj.prueba.domain.exceptions.TokenException;
+import pe.gob.pj.prueba.domain.model.auditoriageneral.PeticionServicios;
 import pe.gob.pj.prueba.domain.model.servicio.PerfilUsuario;
 import pe.gob.pj.prueba.domain.port.usecase.AccesoUseCasePort;
 import pe.gob.pj.prueba.domain.utils.CaptchaUtils;
@@ -46,22 +47,24 @@ public class AccesoController implements Acceso {
   final AccesoUseCasePort accesoUC;
 
   @Override
-  public ResponseEntity<UsuarioResponse> iniciarSesion(String cuo, String ip, String jwt,
+  public ResponseEntity<UsuarioResponse> iniciarSesion(PeticionServicios peticion,
       @Valid LoginRequest request) {
 
     var res = new UsuarioResponse();
-    res.setCodigoOperacion(cuo);
+    res.setCodigoOperacion(peticion.getCuo());
 
     if (!request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
         || (request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
             && !ProjectUtils.isNullOrEmpty(request.getTokenCaptcha()))) {
 
       if (!request.getAplicaCaptcha().equalsIgnoreCase(Estado.ACTIVO_LETRA.getNombre())
-          || CaptchaUtils.validCaptcha(request.getTokenCaptcha(), ip, cuo)) {
-        var usuario = accesoUC.iniciarSesion(cuo, request.getUsuario(), request.getClave());
+          || CaptchaUtils.validCaptcha(request.getTokenCaptcha(), peticion.getIp(),
+              peticion.getCuo())) {
+        var usuario =
+            accesoUC.iniciarSesion(peticion.getCuo(), request.getUsuario(), request.getClave());
 
-        var token = generarNuevoToken(cuo, jwt, request.getUsuario(),
-            usuario.getPerfiles().stream().map(PerfilUsuario::getRol).toList(), ip);
+        var token = generarNuevoToken(peticion.getCuo(), peticion.getJwt(), request.getUsuario(),
+            usuario.getPerfiles().stream().map(PerfilUsuario::getRol).toList(), peticion.getIp());
 
         usuario.setToken(token);
         res.setData(usuario);
@@ -69,14 +72,16 @@ public class AccesoController implements Acceso {
       } else {
         log.error(
             "{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición {}",
-            cuo, request.getAplicaCaptcha(), request.getTokenCaptcha(), ip);
+            peticion.getCuo(), request.getAplicaCaptcha(), request.getTokenCaptcha(),
+            peticion.getIp());
         throw new CaptchaException();
       }
 
     } else {
       log.error(
           "{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición {}",
-          cuo, request.getAplicaCaptcha(), request.getTokenCaptcha(), ip);
+          peticion.getCuo(), request.getAplicaCaptcha(), request.getTokenCaptcha(),
+          peticion.getIp());
       throw new CaptchaException();
     }
 
@@ -89,14 +94,14 @@ public class AccesoController implements Acceso {
   }
 
   @Override
-  public ResponseEntity<PerfilOpcionesResponse> obtenerOpciones(String cuo, String ip, String jwt,
+  public ResponseEntity<PerfilOpcionesResponse> obtenerOpciones(PeticionServicios peticion,
       @Valid ObtenerOpcionesRequest request) {
     var res = new PerfilOpcionesResponse();
-    res.setCodigoOperacion(cuo);
+    res.setCodigoOperacion(peticion.getCuo());
 
-    var perfilOpciones = accesoUC.obtenerOpciones(cuo, request.getIdPerfil());
-    var token = generarNuevoToken(cuo, jwt, request.getUsuario(),
-        Arrays.asList(perfilOpciones.getRol()), ip);
+    var perfilOpciones = accesoUC.obtenerOpciones(peticion.getCuo(), request.getIdPerfil());
+    var token = generarNuevoToken(peticion.getCuo(), peticion.getJwt(), request.getUsuario(),
+        Arrays.asList(perfilOpciones.getRol()), peticion.getIp());
 
     perfilOpciones.setToken(token);
     res.setData(perfilOpciones);

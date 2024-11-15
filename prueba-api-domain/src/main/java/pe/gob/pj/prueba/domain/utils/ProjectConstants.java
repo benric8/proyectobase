@@ -55,15 +55,16 @@ public class ProjectConstants {
 		public static final String FECHA_DD_MM_YYYY_HH_MM_SS_SSS="dd/MM/yyyy HH:mm:ss.SSS";
 		public static final String FECHA_YYYY_MM_DD_HH_MM_SS_SSS="yyyy-MM-dd HH:mm:ss.SSS";
 	}
-	
-	public static final String AUD_CUO = "auditoriaCuo";
-	public static final String AUD_IP = "auditoriaIp";
-	public static final String AUD_IPS = "auditoriaIps";
-	public static final String AUD_USUARIO = "auditoriaUsuario";
-	public static final String AUD_URI = "auditoriaUri";
-	public static final String AUD_PARAMS = "auditoriaParametrosUrl";
-	public static final String AUD_HERRAMIENTA = "auditoriaAgente";
-	public static final String AUD_JWT = "auditoriaJwt";
+
+    public static final String PETICION = "peticionServicio";
+	public static final String CUO = "cuo";
+	public static final String IP = "ip";
+	public static final String IPS = "ips";
+	public static final String USUARIO = "usuario";
+	public static final String URI = "uri";
+	public static final String PARAMS = "params";
+	public static final String HERRAMIENTA = "agente";
+	public static final String JWT = "jwt";
 	
 	public class Mensajes {
 		public static final String MSG_ERROR_GENERICO_CONVERSION = "El tipo de dato de entrada es incorrecto";
