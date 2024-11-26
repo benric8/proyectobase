@@ -1,7 +1,7 @@
 package pe.gob.pj.prueba.domain.port.persistence;
 
-import pe.gob.pj.prueba.domain.model.servicio.PerfilOpcions;
-import pe.gob.pj.prueba.domain.model.servicio.Usuario;
+import pe.gob.pj.prueba.domain.model.negocio.PerfilOpcions;
+import pe.gob.pj.prueba.domain.model.negocio.Usuario;
 
 public interface AccesoPersistencePort {
 	/**

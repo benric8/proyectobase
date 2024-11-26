@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import pe.gob.pj.prueba.domain.exceptions.DatosNoEncontradosException;
 import pe.gob.pj.prueba.domain.exceptions.PersonaYaExisteException;
-import pe.gob.pj.prueba.domain.model.servicio.Persona;
-import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
+import pe.gob.pj.prueba.domain.model.negocio.Persona;
+import pe.gob.pj.prueba.domain.model.negocio.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.domain.port.persistence.GestionPersonaPersistencePort;
 import pe.gob.pj.prueba.domain.port.usecase.GestionPersonaUseCasePort;
 

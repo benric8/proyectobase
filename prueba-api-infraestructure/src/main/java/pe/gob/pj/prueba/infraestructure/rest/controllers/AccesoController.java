@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.model.auditoriageneral.PeticionServicios;
-import pe.gob.pj.prueba.domain.model.servicio.query.IniciarSesionQuery;
+import pe.gob.pj.prueba.domain.model.negocio.query.IniciarSesionQuery;
 import pe.gob.pj.prueba.domain.port.usecase.AccesoUseCasePort;
 import pe.gob.pj.prueba.infraestructure.rest.requests.LoginRequest;
 import pe.gob.pj.prueba.infraestructure.rest.requests.ObtenerOpcionesRequest;

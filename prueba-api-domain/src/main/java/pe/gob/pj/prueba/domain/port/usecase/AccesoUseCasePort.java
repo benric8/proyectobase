@@ -1,9 +1,9 @@
 package pe.gob.pj.prueba.domain.port.usecase;
 
 import pe.gob.pj.prueba.domain.model.auditoriageneral.PeticionServicios;
-import pe.gob.pj.prueba.domain.model.servicio.PerfilOpcions;
-import pe.gob.pj.prueba.domain.model.servicio.Usuario;
-import pe.gob.pj.prueba.domain.model.servicio.query.IniciarSesionQuery;
+import pe.gob.pj.prueba.domain.model.negocio.PerfilOpcions;
+import pe.gob.pj.prueba.domain.model.negocio.Usuario;
+import pe.gob.pj.prueba.domain.model.negocio.query.IniciarSesionQuery;
 
 public interface AccesoUseCasePort {
 

@@ -19,7 +19,7 @@ import lombok.experimental.FieldDefaults;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
 import pe.gob.pj.prueba.infraestructure.common.enums.Estado;
-import pe.gob.pj.prueba.infraestructure.common.enums.OperacionBaseDato;
+import pe.gob.pj.prueba.infraestructure.common.enums.OperacionBaseDatos;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -78,7 +78,7 @@ public class MovAuditoriaAplicativosEntity implements Serializable{
     @Column(name="F_AUD")
     LocalDateTime fAud = LocalDateTime.now();
     @Column(name="B_AUD")
-    private String bAud = OperacionBaseDato.INSERTAR.getNombre();
+    private String bAud = OperacionBaseDatos.INSERTAR.getNombre();
     @Column(name="C_AUD_UID")
     private String cAudId;
     @Column(name="C_AUD_UIDRED")

@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.domain.model.common.enums;
+package pe.gob.pj.prueba.domain.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

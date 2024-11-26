@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import pe.gob.pj.prueba.domain.model.servicio.PerfilOpcions;
+import pe.gob.pj.prueba.domain.model.negocio.PerfilOpcions;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter @Setter

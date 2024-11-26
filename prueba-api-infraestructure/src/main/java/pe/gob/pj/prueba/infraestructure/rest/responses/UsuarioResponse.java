@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
-import pe.gob.pj.prueba.domain.model.servicio.Usuario;
+import pe.gob.pj.prueba.domain.model.negocio.Usuario;
 
 
 @EqualsAndHashCode(callSuper = true)

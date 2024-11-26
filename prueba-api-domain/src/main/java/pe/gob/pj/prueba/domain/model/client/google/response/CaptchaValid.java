@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.domain.model.client;
+package pe.gob.pj.prueba.domain.model.client.google.response;
 
 import java.io.Serializable;
 

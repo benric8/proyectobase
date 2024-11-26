@@ -6,7 +6,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.exceptions.CaptchaException;
-import pe.gob.pj.prueba.domain.model.client.CaptchaValid;
+import pe.gob.pj.prueba.domain.model.client.google.response.CaptchaValid;
 import pe.gob.pj.prueba.domain.port.client.google.GooglePort;
 import pe.gob.pj.prueba.domain.utils.ProjectProperties;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
@@ -21,8 +21,10 @@ public class GoogleAdapter implements GooglePort {
     try {
       RestTemplate plantilla = new RestTemplate();
       UriComponents builder = UriComponentsBuilder.fromHttpUrl(ProjectProperties.getCaptchaUrl())
-          .queryParam("secret", ProjectProperties.getCaptchaToken()).queryParam("response", token)
-          .queryParam("remoteip", remoteIp).build();
+          .queryParam("secret", ProjectProperties.getCaptchaToken())
+          .queryParam("response", token)
+          .queryParam("remoteip", remoteIp)
+          .build();
       var captcha = plantilla.postForObject(builder.toUriString(), null, CaptchaValid.class);
       log.info("{} {} : {}", cuo, builder.toUriString(), captcha.getSuccess());
       if (captcha.getSuccess().equals("true")) {

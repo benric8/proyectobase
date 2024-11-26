@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import pe.gob.pj.prueba.domain.model.servicio.Persona;
-import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
+import pe.gob.pj.prueba.domain.model.negocio.Persona;
+import pe.gob.pj.prueba.domain.model.negocio.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.infraestructure.db.negocio.entities.QMaeTipoDocumentoPersonaEntity;
 import pe.gob.pj.prueba.infraestructure.db.negocio.entities.QMovPersonaEntity;
 

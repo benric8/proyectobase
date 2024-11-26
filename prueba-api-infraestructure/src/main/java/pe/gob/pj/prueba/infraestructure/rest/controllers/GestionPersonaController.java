@@ -10,10 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.model.auditoriageneral.PeticionServicios;
-import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
+import pe.gob.pj.prueba.domain.model.negocio.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.domain.port.usecase.AuditoriaGeneralUseCasePort;
 import pe.gob.pj.prueba.domain.port.usecase.GestionPersonaUseCasePort;
-import pe.gob.pj.prueba.infraestructure.client.servicioconsumir.services.TestClient;
 import pe.gob.pj.prueba.infraestructure.mappers.AuditoriaGeneralMapper;
 import pe.gob.pj.prueba.infraestructure.mappers.PersonaMapper;
 import pe.gob.pj.prueba.infraestructure.rest.requests.PersonaRequest;
@@ -26,8 +25,6 @@ import pe.gob.pj.prueba.infraestructure.rest.responses.PersonaResponse;
 @Slf4j
 public class GestionPersonaController implements GestionPersona {
 
-  @SuppressWarnings("unused")
-  final TestClient clientSunarp;
   final GestionPersonaUseCasePort gestionPersonaUseCasePort;
   final AuditoriaGeneralUseCasePort auditoriaGeneralUseCasePort;
   final PersonaMapper personaMapper;

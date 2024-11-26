@@ -1,8 +1,8 @@
 package pe.gob.pj.prueba.domain.port.persistence;
 
 import java.util.List;
-import pe.gob.pj.prueba.domain.model.servicio.Persona;
-import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
+import pe.gob.pj.prueba.domain.model.negocio.Persona;
+import pe.gob.pj.prueba.domain.model.negocio.query.ConsultarPersonaQuery;
 
 public interface GestionPersonaPersistencePort {
 

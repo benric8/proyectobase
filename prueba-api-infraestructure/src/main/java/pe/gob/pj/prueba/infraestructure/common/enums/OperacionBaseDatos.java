@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum OperacionBaseDato {
+public enum OperacionBaseDatos {
 
   INSERTAR("I"), ACTUALIZAR("U"), ELIMINAR("D");
 

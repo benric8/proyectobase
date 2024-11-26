@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.domain.model.servicio;
+package pe.gob.pj.prueba.domain.model.negocio;
 
 import java.io.Serializable;
 import lombok.AccessLevel;
