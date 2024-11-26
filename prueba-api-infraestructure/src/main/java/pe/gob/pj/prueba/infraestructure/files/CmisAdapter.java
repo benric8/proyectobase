@@ -16,10 +16,9 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundExcept
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
+import pe.gob.pj.prueba.domain.common.utils.ProjectConstants;
+import pe.gob.pj.prueba.domain.common.utils.file.CMISFileProperties;
 import pe.gob.pj.prueba.domain.port.files.CmisPort;
-import pe.gob.pj.prueba.domain.utils.ProjectConstants;
-import pe.gob.pj.prueba.domain.utils.file.CMISFileProperties;
-
 import org.apache.chemistry.opencmis.client.api.Session;
 
 import java.io.*;

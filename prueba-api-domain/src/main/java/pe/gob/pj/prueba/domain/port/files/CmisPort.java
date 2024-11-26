@@ -1,9 +1,7 @@
 package pe.gob.pj.prueba.domain.port.files;
 
 import org.apache.chemistry.opencmis.client.api.Session;
-
-import pe.gob.pj.prueba.domain.utils.file.CMISFileProperties;
-
+import pe.gob.pj.prueba.domain.common.utils.file.CMISFileProperties;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;

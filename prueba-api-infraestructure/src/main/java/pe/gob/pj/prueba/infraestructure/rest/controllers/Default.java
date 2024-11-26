@@ -12,8 +12,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import pe.gob.pj.prueba.domain.common.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.model.auditoriageneral.PeticionServicios;
-import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.infraestructure.rest.responses.AplicativoResponse;
 import pe.gob.pj.prueba.infraestructure.rest.responses.AplicativoTokenResponse;
 

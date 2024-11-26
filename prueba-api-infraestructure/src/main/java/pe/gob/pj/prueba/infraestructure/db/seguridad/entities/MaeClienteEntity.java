@@ -13,8 +13,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import pe.gob.pj.prueba.domain.utils.ProjectUtils;
-import pe.gob.pj.prueba.domain.utils.SecurityConstants;
+import pe.gob.pj.prueba.domain.common.utils.ProjectUtils;
+import pe.gob.pj.prueba.domain.common.utils.SecurityConstants;
 import pe.gob.pj.prueba.infraestructure.common.enums.Estado;
 import pe.gob.pj.prueba.infraestructure.common.enums.OperacionBaseDatos;
 

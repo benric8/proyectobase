@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.domain.utils;
+package pe.gob.pj.prueba.domain.common.utils;
 
 import java.io.Serializable;
 

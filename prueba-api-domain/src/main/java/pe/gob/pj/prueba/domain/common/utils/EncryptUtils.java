@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.domain.utils;
+package pe.gob.pj.prueba.domain.common.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,7 +15,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import pe.gob.pj.prueba.domain.utils.crypt.Base64u;
+import pe.gob.pj.prueba.domain.common.utils.crypt.Base64u;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;

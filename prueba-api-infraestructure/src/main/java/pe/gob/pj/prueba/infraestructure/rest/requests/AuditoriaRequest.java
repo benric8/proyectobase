@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import pe.gob.pj.prueba.domain.utils.ProjectConstants;
+import pe.gob.pj.prueba.domain.common.utils.ProjectConstants;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)

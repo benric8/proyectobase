@@ -22,13 +22,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.common.enums.Claim;
+import pe.gob.pj.prueba.domain.common.utils.EncryptUtils;
+import pe.gob.pj.prueba.domain.common.utils.ProjectProperties;
+import pe.gob.pj.prueba.domain.common.utils.ProjectUtils;
+import pe.gob.pj.prueba.domain.common.utils.SecurityConstants;
 import pe.gob.pj.prueba.domain.exceptions.TokenException;
 import pe.gob.pj.prueba.domain.model.seguridad.query.AutenticacionUsuarioQuery;
 import pe.gob.pj.prueba.domain.port.usecase.SeguridadUseCasePort;
-import pe.gob.pj.prueba.domain.utils.EncryptUtils;
-import pe.gob.pj.prueba.domain.utils.ProjectProperties;
-import pe.gob.pj.prueba.domain.utils.ProjectUtils;
-import pe.gob.pj.prueba.domain.utils.SecurityConstants;
 
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {

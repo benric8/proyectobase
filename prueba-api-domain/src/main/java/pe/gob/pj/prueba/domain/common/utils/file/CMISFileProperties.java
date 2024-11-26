@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.domain.utils.file;
+package pe.gob.pj.prueba.domain.common.utils.file;
 
 
 import java.util.HashMap;

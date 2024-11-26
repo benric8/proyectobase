@@ -7,8 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-
-import pe.gob.pj.prueba.domain.utils.ProjectProperties;
+import pe.gob.pj.prueba.domain.common.utils.ProjectProperties;
 
 @Configuration
 public class RestTemplateConfig {

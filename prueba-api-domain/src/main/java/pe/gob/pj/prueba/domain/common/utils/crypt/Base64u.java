@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.domain.utils.crypt;
+package pe.gob.pj.prueba.domain.common.utils.crypt;
 
 public class Base64u extends Base64 {
 

@@ -1,4 +1,4 @@
-package pe.gob.pj.prueba.domain.utils.crypt;
+package pe.gob.pj.prueba.domain.common.utils.crypt;
 
 public class Base64 {
 	    private String lineSeparator = System.getProperty("line.separator");

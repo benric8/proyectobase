@@ -17,8 +17,8 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
-import pe.gob.pj.prueba.domain.utils.ProjectConstants;
-import pe.gob.pj.prueba.domain.utils.ProjectUtils;
+import pe.gob.pj.prueba.domain.common.utils.ProjectConstants;
+import pe.gob.pj.prueba.domain.common.utils.ProjectUtils;
 import pe.gob.pj.prueba.infraestructure.common.enums.Estado;
 import pe.gob.pj.prueba.infraestructure.common.enums.OperacionBaseDatos;
 

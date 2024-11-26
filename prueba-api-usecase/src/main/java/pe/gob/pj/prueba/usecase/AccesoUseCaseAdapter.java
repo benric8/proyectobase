@@ -23,6 +23,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.common.enums.Claim;
 import pe.gob.pj.prueba.domain.common.enums.Flag;
+import pe.gob.pj.prueba.domain.common.utils.EncryptUtils;
+import pe.gob.pj.prueba.domain.common.utils.ProjectProperties;
+import pe.gob.pj.prueba.domain.common.utils.ProjectUtils;
+import pe.gob.pj.prueba.domain.common.utils.SecurityConstants;
 import pe.gob.pj.prueba.domain.exceptions.CaptchaException;
 import pe.gob.pj.prueba.domain.exceptions.CredencialesSinCoincidenciaException;
 import pe.gob.pj.prueba.domain.exceptions.OpcionesNoAsignadadException;
@@ -36,10 +40,6 @@ import pe.gob.pj.prueba.domain.model.negocio.query.IniciarSesionQuery;
 import pe.gob.pj.prueba.domain.port.client.google.GooglePort;
 import pe.gob.pj.prueba.domain.port.persistence.AccesoPersistencePort;
 import pe.gob.pj.prueba.domain.port.usecase.AccesoUseCasePort;
-import pe.gob.pj.prueba.domain.utils.EncryptUtils;
-import pe.gob.pj.prueba.domain.utils.ProjectProperties;
-import pe.gob.pj.prueba.domain.utils.ProjectUtils;
-import pe.gob.pj.prueba.domain.utils.SecurityConstants;
 
 @Service("accesoUseCasePort")
 @RequiredArgsConstructor

@@ -5,11 +5,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import lombok.extern.slf4j.Slf4j;
+import pe.gob.pj.prueba.domain.common.utils.ProjectProperties;
+import pe.gob.pj.prueba.domain.common.utils.ProjectUtils;
 import pe.gob.pj.prueba.domain.exceptions.CaptchaException;
 import pe.gob.pj.prueba.domain.model.client.google.response.CaptchaValid;
 import pe.gob.pj.prueba.domain.port.client.google.GooglePort;
-import pe.gob.pj.prueba.domain.utils.ProjectProperties;
-import pe.gob.pj.prueba.domain.utils.ProjectUtils;
 
 @Service("googlePort")
 @Slf4j
