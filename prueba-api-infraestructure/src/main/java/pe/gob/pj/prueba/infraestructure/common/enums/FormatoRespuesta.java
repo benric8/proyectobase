@@ -1,17 +1,15 @@
 package pe.gob.pj.prueba.infraestructure.common.enums;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum FormatoRespuesta {
-	
-	XML("XML","Formato de respuesta xml"), JSON("JSON","Formato de respuesta json");
-	
-	String nombre;
-	String descripcion;
 
-	FormatoRespuesta(String nombre, String descripcion) {
-		this.nombre = nombre;
-		this.descripcion = descripcion;
-	}
+  XML("XML", "Formato de respuesta xml"), JSON("JSON", "Formato de respuesta json");
+
+  private final String nombre;
+  private final String descripcion;
+
 }

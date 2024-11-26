@@ -31,7 +31,7 @@ import pe.gob.pj.prueba.infraestructure.rest.responses.PersonaResponse;
 @RequestMapping(value = "personas",
     produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 @Tag(name = "GestionPersona", description = "API para administrar registros de personas")
-public interface GestionPersona {
+public interface GestionPersona extends Base {
 
   /***
    * 
@@ -101,7 +101,6 @@ public interface GestionPersona {
       description = "El cliente no esta autorizado para esta operación")
   public ResponseEntity<PersonaResponse> actualizarPersona(
       @RequestAttribute(name = ProjectConstants.PETICION) PeticionServicios peticion,
-      @PathVariable Integer id,
-      @Valid @RequestBody PersonaRequest persona);
+      @PathVariable Integer id, @Valid @RequestBody PersonaRequest persona);
 
 }

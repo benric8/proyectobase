@@ -1,6 +1,7 @@
 package pe.gob.pj.prueba.infraestructure.security.filters;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -21,13 +22,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.exceptions.TokenException;
+import pe.gob.pj.prueba.domain.model.common.enums.Claim;
 import pe.gob.pj.prueba.domain.model.seguridad.query.AutenticacionUsuarioQuery;
 import pe.gob.pj.prueba.domain.port.usecase.SeguridadUseCasePort;
 import pe.gob.pj.prueba.domain.utils.EncryptUtils;
 import pe.gob.pj.prueba.domain.utils.ProjectProperties;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
 import pe.gob.pj.prueba.domain.utils.SecurityConstants;
-import pe.gob.pj.prueba.infraestructure.common.enums.Claim;
 
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -57,7 +58,16 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request,
       HttpServletResponse response) {
+
     var cuo = ProjectUtils.obtenerCodigoUnico();
+    String referer = request.getHeader("Referer");
+
+    if (!dominioPermitido(referer)) {
+      log.error("{} Origen de petición no permitido {}, dominios permitidos {}", cuo, referer,
+          Arrays.toString(ProjectProperties.getSeguridadDominiosPermitidos()));
+      throw new TokenException();
+    }
+
     var username = request.getHeader(SecurityConstants.HEAD_USERNAME);
     var password = request.getHeader(SecurityConstants.HEAD_PASSWORD);
     var codigoCliente = request.getHeader(SecurityConstants.HEAD_COD_CLIENTE);
@@ -88,6 +98,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         EncryptUtils.encrypt(username, password)));
   }
 
+  private boolean dominioPermitido(String referer) {
+    String todos = "*";
+    return Arrays.asList(ProjectProperties.getSeguridadDominiosPermitidos()).stream()
+        .anyMatch(todos::contains)
+        || (Objects.nonNull(referer)
+            && Arrays.asList(ProjectProperties.getSeguridadDominiosPermitidos()).stream()
+                .anyMatch(referer::contains));
+  }
+
   /**
    * Descripción : Procesa la evaluacion positiva y genera el token
    * 
@@ -111,11 +130,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     int tiempoSegundosRefresh = ProjectProperties.getSeguridadTiempoRefreshSegundos();
     String codigoRolSeleccionado = request.getHeader(SecurityConstants.HEAD_COD_ROL);
 
-    String token = Jwts.builder()
-        .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
+    String token = Jwts.builder().signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
         .setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)
-        .setIssuer(SecurityConstants.TOKEN_ISSUER)
-        .setAudience(SecurityConstants.TOKEN_AUDIENCE)
+        .setIssuer(SecurityConstants.TOKEN_ISSUER).setAudience(SecurityConstants.TOKEN_AUDIENCE)
         .setSubject(user.getUsername())
         .setExpiration(ProjectUtils.sumarRestarSegundos(ahora, tiempoSegundosExpira))
         .claim(Claim.ROLES.getNombre(), roles)

@@ -26,12 +26,12 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.domain.exceptions.TokenException;
 import pe.gob.pj.prueba.domain.model.auditoriageneral.PeticionServicios;
+import pe.gob.pj.prueba.domain.model.common.enums.Claim;
 import pe.gob.pj.prueba.domain.port.usecase.SeguridadUseCasePort;
 import pe.gob.pj.prueba.domain.utils.ProjectConstants;
 import pe.gob.pj.prueba.domain.utils.ProjectProperties;
 import pe.gob.pj.prueba.domain.utils.ProjectUtils;
 import pe.gob.pj.prueba.domain.utils.SecurityConstants;
-import pe.gob.pj.prueba.infraestructure.common.enums.Claim;
 
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {

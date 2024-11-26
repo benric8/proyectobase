@@ -1,8 +1,10 @@
 package pe.gob.pj.prueba.infraestructure.common.enums;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum PatternDatos {
 
 	SEXO("[mfMF]"), 
@@ -20,10 +22,6 @@ public enum PatternDatos {
 	FECHA_DD_MM_YYYY_HH_MM_SS_SSS("(\\d{2})/(\\d{2})/(\\d{4}) (\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{3})"),
 	FECHA_YYYY_MM_DD_HH_MM_SS_SSS("(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{3})");
 
-	String nombre;
-
-	PatternDatos(String nombre) {
-		this.nombre = nombre;
-	}
+	private final String nombre;
 
 }

@@ -1,10 +1,13 @@
 package pe.gob.pj.prueba.infraestructure.common.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import pe.gob.pj.prueba.infraestructure.common.enums.ErrorDefault;
 import pe.gob.pj.prueba.infraestructure.common.enums.TipoError;
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UtilInfraestructure {
 
   public static void handleException(String cuo, Exception e, TipoError tipoError) {
@@ -16,24 +19,24 @@ public class UtilInfraestructure {
 
   public static String obtenerCausaException(Exception e) {
     int causaRaiz = 10;
-    String causaString = "";
+    StringBuilder causaString = new StringBuilder();
     Throwable causa = e.getCause();
     for (int i = 0; i < causaRaiz; i++) {
       if (causa != null) {
-        causaString = causaString + " " + causa;
+        causaString.append(" ").append(causa);
         causa = causa.getCause();
       } else
         break;
 
     }
-    return causaString.trim().equalsIgnoreCase("") ? ErrorDefault.CAUSA_NO_IDENTIFICADA.getNombre()
-        : causaString;
+    return causaString.toString().trim().equalsIgnoreCase("")
+        ? ErrorDefault.CAUSA_NO_IDENTIFICADA.getNombre()
+        : causaString.toString();
   }
 
   public static String obtenerClaseMetodoLineaException(Exception e) {
     String claseMetodoLineaString = "";
     StackTraceElement[] stackTrace = e.getStackTrace();
-    // Imprime la información de la clase y la línea donde se lanzó la excepción
     if (stackTrace != null && stackTrace.length > 0) {
       StackTraceElement firstElement = stackTrace[0];
       claseMetodoLineaString = firstElement.getClassName() + "::" + firstElement.getMethodName()

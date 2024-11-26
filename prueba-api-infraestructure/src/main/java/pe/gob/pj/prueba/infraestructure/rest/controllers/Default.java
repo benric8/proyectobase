@@ -20,7 +20,7 @@ import pe.gob.pj.prueba.infraestructure.rest.responses.AplicativoTokenResponse;
 @RestController
 @RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 @Tag(name = "Preestablecido", description = "API para manejar endpoints bases")
-public interface Default {
+public interface Default extends Base {
 
   /**
    * Método que sirve para verificar versión actual del aplicativo
@@ -53,6 +53,7 @@ public interface Default {
       content = @Content(schema = @Schema(implementation = AplicativoTokenResponse.class)))
   public ResponseEntity<AplicativoTokenResponse> refreshToken(
       @RequestAttribute(name = ProjectConstants.PETICION) PeticionServicios peticion,
+      @RequestParam(defaultValue = "json", required = false) String formatoRespuesta,
       @RequestParam(required = true) String token);
 
 }

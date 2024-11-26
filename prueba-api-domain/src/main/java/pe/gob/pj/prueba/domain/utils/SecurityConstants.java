@@ -1,5 +1,9 @@
 package pe.gob.pj.prueba.domain.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SecurityConstants {
 
     public static final String AUTH_LOGIN_URL = "/api/authenticate";
@@ -25,9 +29,5 @@ public class SecurityConstants {
     public static final String HEAD_PASSWORD="password";
     public static final String HEAD_COD_CLIENTE="codigoCliente";
     public static final String HEAD_COD_ROL="codigoRol";
-
-    private SecurityConstants() {
-        throw new IllegalStateException("Cannot create instance of static util class");
-    }
 
 }

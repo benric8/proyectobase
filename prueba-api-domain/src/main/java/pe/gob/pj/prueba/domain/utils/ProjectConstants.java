@@ -1,10 +1,10 @@
 package pe.gob.pj.prueba.domain.utils;
 
-public class ProjectConstants {
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-	public static final String METHOD_CORTA_ULTIMA_BARRA_INVERTIDA = "PUT";
-	
-	public static final int DEFAULT_PAGINATION_PAGE_SIZE = 10;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class ProjectConstants {
 	
 	public class Esquema {
 		public static final String PRUEBA = "prueba";

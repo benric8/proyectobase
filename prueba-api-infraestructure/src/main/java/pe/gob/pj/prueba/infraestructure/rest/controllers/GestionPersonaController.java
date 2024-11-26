@@ -1,8 +1,6 @@
 package pe.gob.pj.prueba.infraestructure.rest.controllers;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +14,6 @@ import pe.gob.pj.prueba.domain.model.servicio.query.ConsultarPersonaQuery;
 import pe.gob.pj.prueba.domain.port.usecase.AuditoriaGeneralUseCasePort;
 import pe.gob.pj.prueba.domain.port.usecase.GestionPersonaUseCasePort;
 import pe.gob.pj.prueba.infraestructure.client.servicioconsumir.services.TestClient;
-import pe.gob.pj.prueba.infraestructure.common.enums.FormatoRespuesta;
 import pe.gob.pj.prueba.infraestructure.mappers.AuditoriaGeneralMapper;
 import pe.gob.pj.prueba.infraestructure.mappers.PersonaMapper;
 import pe.gob.pj.prueba.infraestructure.rest.requests.PersonaRequest;
@@ -45,12 +42,7 @@ public class GestionPersonaController implements GestionPersona {
     res.setData(gestionPersonaUseCasePort.buscarPersona(peticion.getCuo(),
         ConsultarPersonaQuery.builder().documentoIdentidad(numeroDocumento).build()));
 
-    var headers = new HttpHeaders();
-    headers.setContentType(
-        MediaType.parseMediaType(FormatoRespuesta.XML.getNombre().equalsIgnoreCase(formatoRespuesta)
-            ? MediaType.APPLICATION_XML_VALUE
-            : MediaType.APPLICATION_JSON_VALUE));
-    return new ResponseEntity<>(res, headers, HttpStatus.OK);
+    return new ResponseEntity<>(res, getHttpHeader(formatoRespuesta), HttpStatus.OK);
   }
 
   @Override
@@ -78,12 +70,7 @@ public class GestionPersonaController implements GestionPersona {
       log.error("{} JsonProcessingException {} ", peticion.getCuo(), e);
     }
 
-    var headers = new HttpHeaders();
-    headers.setContentType(MediaType.parseMediaType(
-        FormatoRespuesta.XML.getNombre().equalsIgnoreCase(request.getFormatoRespuesta())
-            ? MediaType.APPLICATION_XML_VALUE
-            : MediaType.APPLICATION_JSON_VALUE));
-    return new ResponseEntity<>(res, headers, HttpStatus.OK);
+    return new ResponseEntity<>(res, getHttpHeader(request.getFormatoRespuesta()), HttpStatus.OK);
   }
 
   @Override
@@ -97,12 +84,7 @@ public class GestionPersonaController implements GestionPersona {
     gestionPersonaUseCasePort.actualizarPersona(peticion.getCuo(), personaDto);
     res.setData(personaDto);
 
-    var headers = new HttpHeaders();
-    headers.setContentType(MediaType.parseMediaType(
-        FormatoRespuesta.XML.getNombre().equalsIgnoreCase(request.getFormatoRespuesta())
-            ? MediaType.APPLICATION_XML_VALUE
-            : MediaType.APPLICATION_JSON_VALUE));
-    return new ResponseEntity<>(res, headers, HttpStatus.OK);
+    return new ResponseEntity<>(res, getHttpHeader(request.getFormatoRespuesta()), HttpStatus.OK);
   }
 
 }

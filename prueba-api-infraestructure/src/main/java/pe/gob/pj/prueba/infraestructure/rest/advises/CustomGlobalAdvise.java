@@ -48,13 +48,13 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
   static final String RESPONSE_CUO = "codigoOperacion";
   static final String RESPONSE_DATA = "data";
 
-  //valid
+  // valid
   @ExceptionHandler(value = {ConstraintViolationException.class})
   protected ResponseEntity<Object> handleConstraintViolationException(
       ConstraintViolationException ex, WebRequest request) {
 
-    String cuo = String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    String cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
     Map<String, Object> body = new LinkedHashMap<>();
     List<String> errorList = new ArrayList<>();
     ex.getConstraintViolations().forEach(violation -> {
@@ -71,13 +71,13 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
     return ResponseEntity.status(HttpStatus.OK).body(body);
   }
 
-  //validated
+  // validated
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
       HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
-    String cuo = String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    String cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
     Map<String, Object> body = new LinkedHashMap<>();
     var errorList = new ArrayList<String>();
     ex.getBindingResult().getAllErrors().forEach(error -> {
@@ -101,8 +101,8 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
       HttpMediaTypeNotSupportedException ex, HttpHeaders headers, HttpStatusCode status,
       WebRequest request) {
-    String cuo = String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    String cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
     Map<String, Object> body = new LinkedHashMap<>();
 
     StringBuilder builder = new StringBuilder();
@@ -131,8 +131,8 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
       HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status,
       WebRequest request) {
-    String cuo = String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    String cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
     Map<String, Object> body = new LinkedHashMap<>();
     StringBuilder builder = new StringBuilder();
     builder.append("El método de solicitud ");
@@ -152,8 +152,8 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
   @Override
   protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex,
       HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-    String cuo = String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    String cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
     String error = "No se ha encontrado ningun controlador para  " + ex.getHttpMethod() + " "
         + ex.getRequestURL();
     Map<String, Object> body = new LinkedHashMap<>();
@@ -175,30 +175,36 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
   @ExceptionHandler({Exception.class})
   ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
     var response = new GlobalResponse();
-    response.setCodigoOperacion(String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST)));
+    var cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    response.setCodigoOperacion(cuo);
     response.setCodigo(TipoError.ERROR_INESPERADO.getCodigo());
     response.setDescripcion(TipoError.ERROR_INESPERADO.getDescripcion());
+    UtilInfraestructure.handleException(cuo, ex, TipoError.ERROR_INESPERADO);
     return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
   }
 
   @ExceptionHandler({CaptchaException.class})
   ResponseEntity<GlobalResponse> handleCaptchaException(CaptchaException ex, WebRequest request) {
     var response = new GlobalResponse();
-    response.setCodigoOperacion(String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST)));
+    var cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    response.setCodigoOperacion(cuo);
     response.setCodigo(TipoError.ERROR_TOKEN_CAPTCHA.getCodigo());
     response.setDescripcion(TipoError.ERROR_TOKEN_CAPTCHA.getDescripcion());
+    UtilInfraestructure.handleException(cuo, ex, TipoError.ERROR_TOKEN_CAPTCHA);
     return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
   }
 
   @ExceptionHandler({TokenException.class})
   ResponseEntity<GlobalResponse> handleTokenException(TokenException ex, WebRequest request) {
     var response = new GlobalResponse();
-    response.setCodigoOperacion(String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST)));
+    var cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    response.setCodigoOperacion(cuo);
     response.setCodigo(TipoError.ERROR_TOKEN_ERRADO.getCodigo());
     response.setDescripcion(TipoError.ERROR_TOKEN_ERRADO.getDescripcion());
+    UtilInfraestructure.handleException(cuo, ex, TipoError.ERROR_TOKEN_ERRADO);
     return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
   }
 
@@ -206,10 +212,12 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
   ResponseEntity<GlobalResponse> handleDatosNoEncontradosException(DatosNoEncontradosException ex,
       WebRequest request) {
     var response = new GlobalResponse();
-    response.setCodigoOperacion(String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST)));
+    var cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    response.setCodigoOperacion(cuo);
     response.setCodigo(TipoError.DATOS_NO_ENCONTRADOS.getCodigo());
     response.setDescripcion(TipoError.DATOS_NO_ENCONTRADOS.getDescripcion());
+    UtilInfraestructure.handleException(cuo, ex, TipoError.DATOS_NO_ENCONTRADOS);
     return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
   }
 
@@ -217,10 +225,12 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
   ResponseEntity<GlobalResponse> handlePersonaYaExisteException(PersonaYaExisteException ex,
       WebRequest request) {
     var response = new GlobalResponse();
-    response.setCodigoOperacion(String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST)));
+    var cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    response.setCodigoOperacion(cuo);
     response.setCodigo(TipoError.PERSONA_YA_REGISTRADA.getCodigo());
     response.setDescripcion(TipoError.PERSONA_YA_REGISTRADA.getDescripcion());
+    UtilInfraestructure.handleException(cuo, ex, TipoError.PERSONA_YA_REGISTRADA);
     return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
   }
 
@@ -228,10 +238,12 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
   ResponseEntity<GlobalResponse> handleOpcionesNoAsignadadException(OpcionesNoAsignadadException ex,
       WebRequest request) {
     var response = new GlobalResponse();
-    response.setCodigoOperacion(String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST)));
+    var cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    response.setCodigoOperacion(cuo);
     response.setCodigo(TipoError.OPCIONES_NOASIGNADAS.getCodigo());
     response.setDescripcion(TipoError.OPCIONES_NOASIGNADAS.getDescripcion());
+    UtilInfraestructure.handleException(cuo, ex, TipoError.OPCIONES_NOASIGNADAS);
     return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.OK);
   }
 
@@ -239,8 +251,8 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
   ResponseEntity<GlobalResponse> handleUsuarioSinPerfilAsignadoException(
       UsuarioSinPerfilAsignadoException ex, WebRequest request) {
     var response = new GlobalResponse();
-    var cuo = String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    var cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
     response.setCodigoOperacion(cuo);
     response.setCodigo(TipoError.PERFIL_NO_ASIGNADO.getCodigo());
     response.setDescripcion(TipoError.PERFIL_NO_ASIGNADO.getDescripcion());
@@ -252,8 +264,8 @@ public class CustomGlobalAdvise extends ResponseEntityExceptionHandler {
   ResponseEntity<GlobalResponse> handleCredencialesSinCoincidenciaException(
       CredencialesSinCoincidenciaException ex, WebRequest request) {
     var response = new GlobalResponse();
-    var cuo = String
-        .valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
+    var cuo =
+        String.valueOf(request.getAttribute(ProjectConstants.CUO, RequestAttributes.SCOPE_REQUEST));
     response.setCodigoOperacion(cuo);
     response.setCodigo(TipoError.CREDENCIALES_INCORRECTAS.getCodigo());
     response.setDescripcion(TipoError.CREDENCIALES_INCORRECTAS.getDescripcion());
