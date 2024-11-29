@@ -18,19 +18,17 @@ public class GoogleAdapter implements GooglePort {
   @Override
   public boolean validarCaptcha(String cuo, String token, String remoteIp) {
     boolean resultado = Boolean.FALSE;
+    UriComponents uriBuilder = UriComponentsBuilder.fromHttpUrl(ProjectProperties.getCaptchaUrl())
+        .queryParam("secret", ProjectProperties.getCaptchaToken()).queryParam("response", token)
+        .queryParam("remoteip", remoteIp).build();
     try {
       RestTemplate plantilla = new RestTemplate();
-      UriComponents builder = UriComponentsBuilder.fromHttpUrl(ProjectProperties.getCaptchaUrl())
-          .queryParam("secret", ProjectProperties.getCaptchaToken())
-          .queryParam("response", token)
-          .queryParam("remoteip", remoteIp)
-          .build();
-      var captcha = plantilla.postForObject(builder.toUriString(), null, CaptchaValid.class);
-      log.info("{} {} : {}", cuo, builder.toUriString(), captcha.getSuccess());
+      var captcha = plantilla.postForObject(uriBuilder.toUriString(), null, CaptchaValid.class);
       if (captcha.getSuccess().equals("true")) {
         return Boolean.TRUE;
       }
     } catch (Exception e) {
+      log.info("{} Error al consumir google : {} ", cuo, uriBuilder.toUriString());
       log.error("{} {}", cuo, ProjectUtils.convertExceptionToString(e));
       throw new CaptchaException();
     }

@@ -29,6 +29,8 @@ public class AccesoController implements Acceso {
   @Override
   public ResponseEntity<UsuarioResponse> iniciarSesion(PeticionServicios peticion,
       @Valid LoginRequest request) {
+    
+    log.info("{} LOGIN [{}] [{}]", peticion.getCuo(), peticion.getIps(), peticion.getIp());
 
     var res = new UsuarioResponse();
     res.setCodigoOperacion(peticion.getCuo());
@@ -45,6 +47,7 @@ public class AccesoController implements Acceso {
   @Override
   public ResponseEntity<PerfilOpcionesResponse> obtenerOpciones(PeticionServicios peticion,
       @Valid ObtenerOpcionesRequest request) {
+    log.info("{} OPCIONES [{}] [{}]", peticion.getCuo(), peticion.getIps(), peticion.getIp());
     var res = new PerfilOpcionesResponse();
     res.setCodigoOperacion(peticion.getCuo());
     res.setData(accesoUC.obtenerOpciones(peticion.getCuo(), request.getUsuario(),

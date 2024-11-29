@@ -68,8 +68,8 @@ public class AccesoUseCaseAdapter implements AccesoUseCasePort {
 
     if (Flag.SI.getCodigo().equalsIgnoreCase(
         Optional.ofNullable(iniciarSesionQuery.aplicaCaptcha()).map(String::trim).orElse(null))
-        && !googlePort.validarCaptcha(iniciarSesionQuery.tokenCaptcha(), peticion.getIp(),
-            peticion.getCuo())) {
+        && !googlePort.validarCaptcha(peticion.getCuo(), iniciarSesionQuery.tokenCaptcha(),
+            peticion.getIp())) {
       log.error(
           "{} Datos de validación captcha -> indicador de validación: {}, token captcha: {} y la ip de la petición {}",
           peticion.getCuo(), iniciarSesionQuery.aplicaCaptcha(), iniciarSesionQuery.tokenCaptcha(),

@@ -33,6 +33,7 @@ public class GestionPersonaController implements GestionPersona {
   @Override
   public ResponseEntity<ConsultaPersonaResponse> consultarPersonas(PeticionServicios peticion,
       String formatoRespuesta, String numeroDocumento) {
+    log.info("{} CONSULTA PERSONA [{}] [{}]", peticion.getCuo(), peticion.getIps(), peticion.getIp());
     var res = new ConsultaPersonaResponse();
     res.setCodigoOperacion(peticion.getCuo());
 
@@ -45,6 +46,7 @@ public class GestionPersonaController implements GestionPersona {
   @Override
   public ResponseEntity<PersonaResponse> registrarPersona(PeticionServicios peticion,
       PersonaRequest request) {
+    log.info("{} REGISTRAR PERSONA [{}] [{}]", peticion.getCuo(), peticion.getIps(), peticion.getIp());
     var res = new PersonaResponse();
     res.setCodigoOperacion(peticion.getCuo());
 
@@ -73,6 +75,7 @@ public class GestionPersonaController implements GestionPersona {
   @Override
   public ResponseEntity<PersonaResponse> actualizarPersona(PeticionServicios peticion, Integer id,
       PersonaRequest request) {
+    log.info("{} ACTUALIZAR PERSONA [{}] [{}]", peticion.getCuo(), peticion.getIps(), peticion.getIp());
     var res = new PersonaResponse();
     res.setCodigoOperacion(peticion.getCuo());
 
